@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "lFlDR6HFN8c=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\Galon\\source\\repos\\TarjetaTest\\TarjetaTest.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "Unable to load the service index for source https://api.nuget.org/v3/index.json.\r\n  An error occurred while sending the request.\r\n  The remote name could not be resolved: 'api.nuget.org'",
+      "projectPath": "C:\\Users\\Galon\\source\\repos\\TarjetaTest\\TarjetaTest.csproj",
+      "filePath": "C:\\Users\\Galon\\source\\repos\\TarjetaTest\\TarjetaTest.csproj",
+      "libraryId": "NUnit.Analyzers",
+      "targetGraphs": []
+    }
+  ]
+}
