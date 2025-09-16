@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TrabajoTarjeta2025\TrabajoTarjeta2025.csproj" />
+    <ProjectReference Include="..\TrabajoTarjeta2025\TarjetaApp.csproj" />
   </ItemGroup>
 
 </Project>
