@@ -381,6 +381,21 @@
             "related": ".xml"
           }
         }
+      },
+      "TarjetaApp/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "dependencies": {
+          "Microsoft.NET.Test.Sdk": "17.14.1",
+          "NUnit": "4.4.0",
+          "NUnit3TestAdapter": "5.1.0"
+        },
+        "compile": {
+          "bin/placeholder/TarjetaApp.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TarjetaApp.dll": {}
+        }
       }
     }
   },
@@ -975,15 +990,20 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "TarjetaApp/1.0.0": {
+      "type": "project",
+      "path": "../TarjetaApp/TarjetaApp.csproj",
+      "msbuildProject": "../TarjetaApp/TarjetaApp.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net5.0": [
-      "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TrabajoTarjeta2025\\TarjetaApp.csproj",
       "Microsoft.NET.Test.Sdk >= 17.5.0",
       "NUnit >= 3.13.3",
       "NUnit.Analyzers >= 3.6.1",
       "NUnit3TestAdapter >= 4.4.2",
+      "TarjetaApp >= 1.0.0",
       "coverlet.collector >= 3.2.0"
     ]
   },
@@ -1019,8 +1039,8 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TrabajoTarjeta2025\\TarjetaApp.csproj": {
-              "projectPath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TrabajoTarjeta2025\\TarjetaApp.csproj"
+            "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaApp\\TarjetaApp.csproj": {
+              "projectPath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaApp\\TarjetaApp.csproj"
             }
           }
         }
@@ -1084,10 +1104,28 @@
   },
   "logs": [
     {
-      "code": "NU1104",
+      "code": "NU1605",
       "level": "Error",
-      "message": "Unable to find project 'C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TrabajoTarjeta2025\\TarjetaApp.csproj'. Check that the project reference is valid and that the project file exists.",
-      "libraryId": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TrabajoTarjeta2025\\TarjetaApp.csproj",
+      "message": "Warning As Error: Detected package downgrade: Microsoft.NET.Test.Sdk from 17.14.1 to 17.5.0. Reference the package directly from the project to select a different version. \r\n TarjetaTest -> TarjetaApp -> Microsoft.NET.Test.Sdk (>= 17.14.1) \r\n TarjetaTest -> Microsoft.NET.Test.Sdk (>= 17.5.0)",
+      "libraryId": "Microsoft.NET.Test.Sdk",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: NUnit from 4.4.0 to 3.13.3. Reference the package directly from the project to select a different version. \r\n TarjetaTest -> TarjetaApp -> NUnit (>= 4.4.0) \r\n TarjetaTest -> NUnit (>= 3.13.3)",
+      "libraryId": "NUnit",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: NUnit3TestAdapter from 5.1.0 to 4.4.2. Reference the package directly from the project to select a different version. \r\n TarjetaTest -> TarjetaApp -> NUnit3TestAdapter (>= 5.1.0) \r\n TarjetaTest -> NUnit3TestAdapter (>= 4.4.2)",
+      "libraryId": "NUnit3TestAdapter",
       "targetGraphs": [
         "net5.0"
       ]

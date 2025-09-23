@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ﻿using System;
 
 namespace TarjetaApp
@@ -10,3 +11,17 @@ namespace TarjetaApp
         }
     }
 }
+=======
+﻿using System;
+
+namespace TarjetaApp
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            
+        }
+    }
+}
+>>>>>>> Stashed changes

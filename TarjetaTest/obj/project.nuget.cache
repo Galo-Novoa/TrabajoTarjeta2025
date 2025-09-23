@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "zRCGVWJMlGs=",
+  "dgSpecHash": "x9rDG+3Rwrs=",
   "success": false,
   "projectFilePath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaTest\\TarjetaTest.csproj",
   "expectedPackageFiles": [
@@ -20,12 +20,34 @@
   ],
   "logs": [
     {
-      "code": "NU1104",
+      "code": "NU1605",
       "level": "Error",
-      "message": "Unable to find project 'C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TrabajoTarjeta2025\\TarjetaApp.csproj'. Check that the project reference is valid and that the project file exists.",
+      "message": "Warning As Error: Detected package downgrade: Microsoft.NET.Test.Sdk from 17.14.1 to 17.5.0. Reference the package directly from the project to select a different version. \r\n TarjetaTest -> TarjetaApp -> Microsoft.NET.Test.Sdk (>= 17.14.1) \r\n TarjetaTest -> Microsoft.NET.Test.Sdk (>= 17.5.0)",
       "projectPath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaTest\\TarjetaTest.csproj",
       "filePath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaTest\\TarjetaTest.csproj",
-      "libraryId": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TrabajoTarjeta2025\\TarjetaApp.csproj",
+      "libraryId": "Microsoft.NET.Test.Sdk",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: NUnit from 4.4.0 to 3.13.3. Reference the package directly from the project to select a different version. \r\n TarjetaTest -> TarjetaApp -> NUnit (>= 4.4.0) \r\n TarjetaTest -> NUnit (>= 3.13.3)",
+      "projectPath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaTest\\TarjetaTest.csproj",
+      "filePath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaTest\\TarjetaTest.csproj",
+      "libraryId": "NUnit",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: NUnit3TestAdapter from 5.1.0 to 4.4.2. Reference the package directly from the project to select a different version. \r\n TarjetaTest -> TarjetaApp -> NUnit3TestAdapter (>= 5.1.0) \r\n TarjetaTest -> NUnit3TestAdapter (>= 4.4.2)",
+      "projectPath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaTest\\TarjetaTest.csproj",
+      "filePath": "C:\\Users\\Galon\\source\\repos\\TrabajoTarjeta2025\\TarjetaTest\\TarjetaTest.csproj",
+      "libraryId": "NUnit3TestAdapter",
       "targetGraphs": [
         "net5.0"
       ]
