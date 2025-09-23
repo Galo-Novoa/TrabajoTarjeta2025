@@ -4,9 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrabajoTarjeta2025
+namespace TarjetaApp
 {
     internal class Boleto
     {
+        public string linea;
+        public Boleto(string linea)
+        {
+            this.linea = linea;
+        }
     }
 }

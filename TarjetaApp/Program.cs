@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TrabajoTarjeta2025
+namespace TarjetaApp
 {
     internal class Program
     {
