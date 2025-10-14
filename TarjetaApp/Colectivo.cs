@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TarjetaApp
 {
@@ -14,13 +9,18 @@ namespace TarjetaApp
 
         public Colectivo(string linea) { this.linea = linea; }
 
-        public Boleto pagarCon(Tarjeta tarjeta) {
+        public bool pagarCon(Tarjeta tarjeta)
+        {
             if (tarjeta.cobrarPasaje(precioPasaje))
             {
                 Boleto boleto = new Boleto(this.linea);
-                return boleto;
+                tarjeta.AgregarBoleto(boleto);
+                return true;
             }
-            else { return null; }
+            else
+            {
+                return false;
+            }
         }
     }
 }
