@@ -9,6 +9,7 @@ namespace TarjetaApp
     internal class Boleto
     {
         public string linea;
+        public string franquicia;
         public Boleto(string linea)
         {
             this.linea = linea;
