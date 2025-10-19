@@ -20,11 +20,11 @@ namespace TarjetaTest
         public void CargarSaldo_Aceptado_AumentaSaldo(decimal monto)
         {
             var tarjeta = new Tarjeta(0m);
-            tarjeta.cargarSaldo(monto);
-            Assert.That(tarjeta.getSaldo(), Is.EqualTo(monto));
+            tarjeta.CargarSaldo(monto);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(monto));
             var colectivo = new Colectivo("122R");
-            Assert.That(colectivo.pagarCon(tarjeta), !(Is.EqualTo(null)));
-            Console.WriteLine($"Saldo luego de pagar el pasaje: ${tarjeta.getSaldo()}.");
+            Assert.That(colectivo.PagarCon(tarjeta), !(Is.EqualTo(null)));
+            Console.WriteLine($"Saldo luego de pagar el pasaje: ${tarjeta.GetSaldo()}.");
         }
     }
 }
