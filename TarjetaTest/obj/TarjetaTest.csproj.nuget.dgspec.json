@@ -49,20 +49,6 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "dependencies": {
-            "Microsoft.NET.Test.Sdk": {
-              "target": "Package",
-              "version": "[17.14.1, )"
-            },
-            "NUnit": {
-              "target": "Package",
-              "version": "[4.4.0, )"
-            },
-            "NUnit3TestAdapter": {
-              "target": "Package",
-              "version": "[5.1.0, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -79,7 +65,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -135,7 +121,7 @@
           "dependencies": {
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
-              "version": "[17.5.0, )"
+              "version": "[16.11.0, )"
             },
             "NUnit": {
               "target": "Package",
@@ -143,15 +129,15 @@
             },
             "NUnit.Analyzers": {
               "target": "Package",
-              "version": "[3.6.1, )"
+              "version": "[3.3.0, )"
             },
             "NUnit3TestAdapter": {
               "target": "Package",
-              "version": "[4.4.2, )"
+              "version": "[4.0.0, )"
             },
             "coverlet.collector": {
               "target": "Package",
-              "version": "[3.2.0, )"
+              "version": "[3.1.2, )"
             }
           },
           "imports": [
@@ -170,7 +156,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }

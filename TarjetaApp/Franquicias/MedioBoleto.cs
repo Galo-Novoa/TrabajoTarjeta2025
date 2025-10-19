@@ -1,6 +1,6 @@
 namespace TrabajoTarjeta
 {
-	internal class BoletoEstudiantil : Tarjeta
+	internal class MedioBoleto : Tarjeta
 	{
 		public override franquicia = "Medio Boleto Estudiantil";
     }
