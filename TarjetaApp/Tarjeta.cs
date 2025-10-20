@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,63 +6,62 @@ namespace TarjetaApp
 {
     internal class Tarjeta
     {
-        private decimal saldo { get; set; }
-        private static decimal[] cargasAceptadas =
+        private decimal Saldo { get; set; }
+        public virtual string Franquicia { get; set; } = "Ninguna";
+        private static readonly decimal[] CargasAceptadas =
             { 2000m, 3000m, 4000m, 5000m, 8000m, 10000m, 15000m, 20000m, 25000m, 30000m };
 
-        private const decimal LIMITE_SALDO = 40000m;
-        private const decimal SALDO_NEGATIVO_PERMITIDO = -1200m;
+        private const decimal LimiteSaldo = 40000m;
+        private const decimal SaldoNegativoPermitido = -1200m;
 
-        private List<Boleto> historialViajes;
+        public List<Boleto> historialViajes;
 
-        public Tarjeta(decimal saldoInicial)
+        public Tarjeta(decimal SaldoInicial)
         {
-            this.saldo = saldoInicial;
+            this.Saldo = SaldoInicial;
             this.historialViajes = new List<Boleto>();
         }
+        public decimal GetSaldo() => Saldo;
+        public string GetFranquicia() => Franquicia;
+        public List<Boleto> GetHistorialViajes() => historialViajes;
 
-        public decimal getSaldo() { return saldo; }
-
-        public decimal getSaldo() => saldo;
-        public List<Boleto> getHistorialViajes() => historialViajes;
-
-        public void cargarSaldo(decimal monto)
+        public void CargarSaldo(decimal monto)
         {
-            if (cargasAceptadas.Contains(monto))
+            if (CargasAceptadas.Contains(monto))
             {
-                saldo += monto;
-                if (saldo > LIMITE_SALDO)
-                    saldo = LIMITE_SALDO;
+                Saldo += monto;
+                if (Saldo > LimiteSaldo)
+                    Saldo = LimiteSaldo;
 
-                Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${saldo}.");
+                Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${Saldo}.");
             }
             else
             {
-                Console.WriteLine($"Monto no aceptado. Valores válidos: {string.Join(", ", cargasAceptadas)}.");
+                Console.WriteLine($"Monto no aceptado. Valores válidos: {string.Join(", ", CargasAceptadas)}.");
             }
         }
 
-        public bool cobrarPasaje(decimal monto)
+        public bool CobrarPasaje(decimal monto)
         {
-            decimal nuevoSaldo = saldo - monto;
+            decimal nuevoSaldo = Saldo - monto;
 
-            if (nuevoSaldo >= SALDO_NEGATIVO_PERMITIDO)
+            if (nuevoSaldo >= SaldoNegativoPermitido)
             {
-                saldo = nuevoSaldo;
+                Saldo = nuevoSaldo;
 
-                if (saldo < 0)
-                    Console.WriteLine($"Saldo en negativo: ${saldo} (viaje plus utilizado)");
+                if (Saldo < 0)
+                    Console.WriteLine($"Saldo en negativo: ${Saldo} (viaje plus utilizado)");
 
                 return true;
             }
             else
             {
-                Console.WriteLine($"No se puede realizar el viaje. Límite de saldo negativo alcanzado (${saldo}).");
+                Console.WriteLine($"No se puede realizar el viaje. Límite de Saldo negativo alcanzado (${Saldo}).");
                 return false;
             }
         }
 
-        public void agregarBoleto(Boleto boleto)
+        public void AgregarBoleto(Boleto boleto)
         {
             if (boleto != null)
                 historialViajes.Add(boleto);

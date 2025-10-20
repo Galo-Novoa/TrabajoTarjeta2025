@@ -1,19 +1,19 @@
-﻿using System;
+using System;
 
 namespace TarjetaApp
 {
     internal class Colectivo
     {
-        private static readonly decimal precioPasaje = 1580m;
+        private const decimal PrecioPasajeBase = 1580m;
         public string linea;
 
         public Colectivo(string linea) { this.linea = linea; }
 
-        public bool pagarCon(Tarjeta tarjeta)
+        public bool PagarCon(Tarjeta tarjeta)
         {
-            if (tarjeta.cobrarPasaje(precioPasaje))
+            if (tarjeta.CobrarPasaje(CalcularPrecio(tarjeta)))
             {
-                Boleto boleto = new Boleto(this.linea);
+                var boleto = new Boleto(this.linea);
                 tarjeta.AgregarBoleto(boleto);
                 return true;
             }
@@ -21,6 +21,18 @@ namespace TarjetaApp
             {
                 return false;
             }
+        }
+
+        private static decimal CalcularPrecio(Tarjeta tarjeta)
+        {
+            decimal descuento = tarjeta.GetFranquicia() switch
+            {
+                "Franquicia Completa" => 0m,
+                "Boleto Educativo Gratuito" => 0m,
+                "Medio Boleto Estudiantil" => 0.5m,
+                _ => 1m
+            };
+            return PrecioPasajeBase * descuento;
         }
     }
 }
