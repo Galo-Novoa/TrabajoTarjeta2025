@@ -22,12 +22,12 @@ namespace TarjetaTest
         {
             var tarjeta = new Tarjeta(0m);
             var colectivo = new Colectivo("142N");
-            var boleto = colectivo.pagarCon(tarjeta);
-            Assert.That(boleto, Is.Null);
-            tarjeta.cargarSaldo(monto);
-            Assert.That(tarjeta.getSaldo(), Is.EqualTo(monto));
-            Assert.That(colectivo.pagarCon(tarjeta), !(Is.EqualTo(null)));
-            Console.WriteLine($"Saldo luego de pagar el pasaje: ${tarjeta.getSaldo()}.");
+            var boleto = colectivo.PagarCon(tarjeta);
+            Assert.That(boleto, Is.False);
+            tarjeta.CargarSaldo(monto);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(monto));
+            Assert.That(colectivo.PagarCon(tarjeta), !(Is.EqualTo(null)));
+            Console.WriteLine($"Saldo luego de pagar el pasaje: ${tarjeta.GetSaldo()}.");
         }
 
         [TestCase(2000)]
@@ -43,22 +43,22 @@ namespace TarjetaTest
         public void Pasarse_de_Saldo_al_cargar(decimal monto)
         {
             var tarjeta = new Tarjeta(39000m);
-            tarjeta.cargarSaldo(monto);
-            Assert.That(tarjeta.getSaldo(), Is.EqualTo(40000m));
+            tarjeta.CargarSaldo(monto);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(40000m));
         }
 
         [Test]
         public void Testear_Main()
         {
-            Assert.That(Program.Main(new string[] { }), Is.EqualTo(0));
+            Assert.That(TarjetaApp.Program.Main(new string[] { }), Is.EqualTo(0));
         }
 
         [Test]
         public void Monto_de_Carga_no_aceptado()
         {
             var tarjeta = new Tarjeta(0m);
-            tarjeta.cargarSaldo(5m);
-            Assert.That(tarjeta.getSaldo(), Is.EqualTo(0m));
+            tarjeta.CargarSaldo(5m);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(0m));
         }
     }
 }
