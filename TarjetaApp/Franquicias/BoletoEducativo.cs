@@ -1,7 +1,12 @@
-namespace TrabajoTarjeta
+namespace TarjetaApp.Franquicias
 {
-    internal class BoletoEstudiantil : Tarjeta
+    internal class BoletoEducativo : Tarjeta
     {
-        public override franquicia = "Boleto Educativo Gratuito";
+        public override string Franquicia { get; set; }
+
+        public BoletoEducativo(decimal SaldoInicial) : base(SaldoInicial)
+        {
+            this.Franquicia  = "Boleto Educativo Gratuito";
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace TarjetaApp
 {
     internal class Colectivo
     {
-        private const decimal PRECIO_PASAJE_BASE = 1580m;
+        private const decimal PrecioPasajeBase = 1580m;
         public string linea;
 
         public Colectivo(string linea) { this.linea = linea; }
@@ -32,7 +32,7 @@ namespace TarjetaApp
                 "Medio Boleto Estudiantil" => 0.5m,
                 _ => 1m
             };
-            return PRECIO_PASAJE_BASE * descuento;
+            return PrecioPasajeBase * descuento;
         }
     }
 }
