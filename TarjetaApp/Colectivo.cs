@@ -1,26 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace TarjetaApp
 {
     internal class Colectivo
     {
-        private static readonly decimal precioPasaje = 1580m;
+        private const decimal PrecioPasajeBase = 1580m;
         public string linea;
 
         public Colectivo(string linea) { this.linea = linea; }
 
-        public Boleto pagarCon(Tarjeta tarjeta) {
-            if (tarjeta.cobrarPasaje(precioPasaje))
+        public bool PagarCon(Tarjeta tarjeta)
+        {
+            if (tarjeta.CobrarPasaje(CalcularPrecio(tarjeta)))
             {
-                Boleto boleto = new Boleto(this.linea);
-                return boleto;
+                var boleto = new Boleto(this.linea);
+                tarjeta.AgregarBoleto(boleto);
+                return true;
             }
-            else { return null; }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static decimal CalcularPrecio(Tarjeta tarjeta)
+        {
+            decimal descuento = tarjeta.GetFranquicia() switch
+            {
+                "Franquicia Completa" => 0m,
+                "Boleto Educativo Gratuito" => 0m,
+                "Medio Boleto Estudiantil" => 0.5m,
+                _ => 1m
+            };
+            return PrecioPasajeBase * descuento;
         }
     }
 }
