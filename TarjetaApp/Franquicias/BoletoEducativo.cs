@@ -1,4 +1,4 @@
-namespace TarjetaApp.Franquicias
+﻿namespace TarjetaApp.Franquicias
 {
     internal class BoletoEducativo : Tarjeta
     {

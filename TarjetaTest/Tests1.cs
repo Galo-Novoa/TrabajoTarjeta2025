@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestPlatform.TestHost;
+﻿using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
 using System;
 using TarjetaApp;
