@@ -4,3 +4,5 @@ bin/
 obj/
 *.user
 *.suo
+TarjetaTest/obj/
+TarjetaApp/obj/
