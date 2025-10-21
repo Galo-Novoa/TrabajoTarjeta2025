@@ -187,5 +187,58 @@ namespace TarjetaTest
             Assert.That(colectivo.PagarCon(tarjeta), Is.True);
             Assert.That(tarjeta.GetSaldo(), Is.EqualTo(1580m * 0.5m)); // Debería descontar la mitad
         }
+
+        [Test]
+        public void PrecioPasajeBase_Es_Correcto()
+        {
+            // Usar reflexión para acceder a la constante privada
+            var colectivo = new Colectivo("142N");
+            var field = typeof(Colectivo).GetField("PrecioPasajeBase",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+            var precio = (decimal)field.GetValue(null);
+            Assert.That(precio, Is.EqualTo(1580m));
+        }
+
+        [Test]
+        public void CalcularPrecio_Usa_PrecioPasajeBase_Correctamente()
+        {
+            var tarjeta = new Tarjeta(0m);
+            var colectivo = new Colectivo("142N");
+
+            // Forzar el cálculo de precio para tarjeta normal (100% del precio)
+            tarjeta.CargarSaldo(2000m);
+            var viajeExitoso = colectivo.PagarCon(tarjeta);
+
+            Assert.That(viajeExitoso, Is.True);
+            // El saldo debería ser 2000 - 1580 = 420
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(420m));
+        }
+
+        [Test]
+        public void CalcularPrecio_Con_FranquiciaCompleta_Es_Cero()
+        {
+            var tarjeta = new FranquiciaCompleta(0m);
+            var colectivo = new Colectivo("142N");
+
+            var viajeExitoso = colectivo.PagarCon(tarjeta);
+
+            Assert.That(viajeExitoso, Is.True);
+            // Con franquicia completa, no debe descontar nada
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(0m));
+        }
+
+        [Test]
+        public void CalcularPrecio_Con_MedioBoleto_Es_Mitad()
+        {
+            var tarjeta = new MedioBoleto(1580m);
+            var colectivo = new Colectivo("142N");
+
+            var viajeExitoso = colectivo.PagarCon(tarjeta);
+
+            Assert.That(viajeExitoso, Is.True);
+            // Con medio boleto, debería descontar la mitad: 1580 * 0.5 = 790
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(790m));
+        }
     }
 }
