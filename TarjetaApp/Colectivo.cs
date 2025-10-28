@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 
 namespace TarjetaApp
 {
     internal class Colectivo
     {
-        private const decimal PrecioPasajeBase = 1580m;
+        private static decimal PrecioPasajeBase => 1580m;
         public string linea;
 
         public Colectivo(string linea) { this.linea = linea; }

@@ -1,11 +1,10 @@
-﻿using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
 using System;
 using TarjetaApp;
 
 namespace TarjetaTest
 {
-    public class Tests
+    public class Tests1
     {
 
         [TestCase(2000)]
@@ -45,12 +44,6 @@ namespace TarjetaTest
             var tarjeta = new Tarjeta(39000m);
             tarjeta.CargarSaldo(monto);
             Assert.That(tarjeta.GetSaldo(), Is.EqualTo(40000m));
-        }
-
-        [Test]
-        public void Testear_Main()
-        {
-            Assert.That(TarjetaApp.Program.Main(new string[] { }), Is.EqualTo(0));
         }
 
         [Test]

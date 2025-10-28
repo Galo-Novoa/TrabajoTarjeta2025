@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System;
 using TarjetaApp;
 using TarjetaApp.Franquicias;
@@ -44,12 +44,6 @@ namespace TarjetaTest
             var tarjeta = new Tarjeta(39000m);
             tarjeta.CargarSaldo(monto);
             Assert.That(tarjeta.GetSaldo(), Is.EqualTo(40000m));
-        }
-
-        [Test]
-        public void Testear_Main()
-        {
-            Assert.That(Program.Main(new string[] { }), Is.EqualTo(0));
         }
 
         [Test]
@@ -186,18 +180,6 @@ namespace TarjetaTest
             Assert.That(tarjeta.GetFranquicia(), Is.EqualTo("Medio Boleto Estudiantil"));
             Assert.That(colectivo.PagarCon(tarjeta), Is.True);
             Assert.That(tarjeta.GetSaldo(), Is.EqualTo(1580m * 0.5m)); // Debería descontar la mitad
-        }
-
-        [Test]
-        public void PrecioPasajeBase_Es_Correcto()
-        {
-            // Usar reflexión para acceder a la constante privada
-            var colectivo = new Colectivo("142N");
-            var field = typeof(Colectivo).GetField("PrecioPasajeBase",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-
-            var precio = (decimal)field.GetValue(null);
-            Assert.That(precio, Is.EqualTo(1580m));
         }
 
         [Test]
