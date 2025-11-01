@@ -13,7 +13,7 @@ namespace TarjetaApp
         {
             if (tarjeta.CobrarPasaje(CalcularPrecio(tarjeta)))
             {
-                var boleto = new Boleto(this.linea, tarjeta, PrecioPasajeBase);
+                var boleto = new Boleto(this.linea, tarjeta);
                 tarjeta.AgregarBoleto(boleto);
                 return true;
             }

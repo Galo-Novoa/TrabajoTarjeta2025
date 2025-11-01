@@ -165,7 +165,7 @@ namespace TarjetaTest
         public void Boleto_Creacion_Correcta()
         {
             var tarjeta = new Tarjeta(0m);
-            var boleto = new Boleto("142N", tarjeta, Colectivo.PrecioPasajeBase);
+            var boleto = new Boleto("142N", tarjeta);
 
             Assert.Multiple(() =>
             {

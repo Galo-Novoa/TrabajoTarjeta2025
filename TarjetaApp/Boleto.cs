@@ -13,12 +13,18 @@ namespace TarjetaApp
         public DateTime Fecha { get; private set; }
         public  decimal Monto { get; private set; }
         public int Id { get; private set; }
-        public Boleto(string linea, Tarjeta tarjeta, decimal monto)
+
+        public decimal Saldo { get; private set; }
+
+        public decimal Restante { get; private set; }
+        public Boleto(string linea, Tarjeta tarjeta)
         {
             this.Linea = linea;
             this.Franquicia = tarjeta.Franquicia;
-            this.Monto = monto;
+            this.Monto = Colectivo.PrecioPasajeBase;
             this.Id = tarjeta.Id;
+            this.Restante = tarjeta.Saldo;
+            this.Saldo = Restante + Monto;
             //Falta implementación de sistema de tiempo para Fecha.
         }
 
