@@ -6,24 +6,26 @@ namespace TarjetaApp
 {
     internal class Tarjeta
     {
-        private decimal Saldo { get; set; }
-        public virtual string Franquicia { get; set; } = "Ninguna";
+        public decimal Saldo { get; private set; }
+        public virtual string Franquicia { get; protected set; } = "Ninguna";
         private static readonly decimal[] CargasAceptadas =
             { 2000m, 3000m, 4000m, 5000m, 8000m, 10000m, 15000m, 20000m, 25000m, 30000m };
+
+        public int Id { get; set; }
+        private static int contadorId = 0;
 
         private const decimal LimiteSaldo = 40000m;
         private const decimal SaldoNegativoPermitido = -1200m;
 
-        public List<Boleto> historialViajes;
+        public List<Boleto> HistorialViajes { get; private set; }
 
         public Tarjeta(decimal SaldoInicial)
         {
             this.Saldo = SaldoInicial;
-            this.historialViajes = new List<Boleto>();
+            this.HistorialViajes = new List<Boleto>();
+            this.Id = contadorId;
+            contadorId++;
         }
-        public decimal GetSaldo() => Saldo;
-        public string GetFranquicia() => Franquicia;
-        public List<Boleto> GetHistorialViajes() => historialViajes;
 
         public void CargarSaldo(decimal monto)
         {
@@ -64,7 +66,7 @@ namespace TarjetaApp
         public void AgregarBoleto(Boleto boleto)
         {
             if (boleto != null)
-                historialViajes.Add(boleto);
+                HistorialViajes.Add(boleto);
         }
     }
 }

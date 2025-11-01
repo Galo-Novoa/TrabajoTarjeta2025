@@ -4,7 +4,7 @@ namespace TarjetaApp
 {
     internal class Colectivo
     {
-        private static decimal PrecioPasajeBase => 1580m;
+        public static decimal PrecioPasajeBase => 1580m;
         public string linea;
 
         public Colectivo(string linea) { this.linea = linea; }
@@ -13,7 +13,7 @@ namespace TarjetaApp
         {
             if (tarjeta.CobrarPasaje(CalcularPrecio(tarjeta)))
             {
-                var boleto = new Boleto(this.linea);
+                var boleto = new Boleto(this.linea, tarjeta, PrecioPasajeBase);
                 tarjeta.AgregarBoleto(boleto);
                 return true;
             }
@@ -25,7 +25,7 @@ namespace TarjetaApp
 
         private static decimal CalcularPrecio(Tarjeta tarjeta)
         {
-            decimal descuento = tarjeta.GetFranquicia() switch
+            decimal descuento = tarjeta.Franquicia switch
             {
                 "Franquicia Completa" => 0m,
                 "Boleto Educativo Gratuito" => 0m,
