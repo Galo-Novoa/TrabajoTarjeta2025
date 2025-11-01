@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using System;
 using TarjetaApp;
-using TarjetaApp.Franquicias;
 
 namespace TarjetaTest
 {
@@ -27,11 +26,11 @@ namespace TarjetaTest
             {
                 Assert.That(boleto, Is.False);
                 tarjeta.CargarSaldo(monto);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(monto));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(monto));
                 Assert.That(colectivo.PagarCon(tarjeta), Is.True);
             });
 
-            Console.WriteLine($"Saldo luego de pagar el pasaje: ${tarjeta.Saldo}.");
+            Console.WriteLine($"Saldo luego de pagar el pasaje: ${tarjeta.GetSaldo()}.");
         }
 
         [TestCase(2000)]
@@ -49,7 +48,7 @@ namespace TarjetaTest
             var tarjeta = new Tarjeta(39000m);
             tarjeta.CargarSaldo(monto);
 
-            Assert.That(tarjeta.Saldo, Is.EqualTo(40000m));
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(40000m));
         }
 
         [Test]
@@ -58,7 +57,7 @@ namespace TarjetaTest
             var tarjeta = new Tarjeta(0m);
             tarjeta.CargarSaldo(5m);
 
-            Assert.That(tarjeta.Saldo, Is.EqualTo(0m));
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(0m));
         }
 
         [Test]
@@ -71,7 +70,7 @@ namespace TarjetaTest
             {
                 // Primer viaje plus
                 Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(-1080m));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(-1080m));
 
                 // Segundo viaje plus (debería fallar)
                 Assert.That(colectivo.PagarCon(tarjeta), Is.False);
@@ -87,7 +86,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-                Assert.That(tarjeta.Saldo, Is.LessThan(0));
+                Assert.That(tarjeta.GetSaldo(), Is.LessThan(0));
             });
         }
 
@@ -102,8 +101,8 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(viajeExitoso, Is.True);
-                Assert.That(tarjeta.HistorialViajes, Has.Count.EqualTo(1));
-                Assert.That(tarjeta.HistorialViajes[0].Linea, Is.EqualTo("142N"));
+                Assert.That(tarjeta.GetHistorialViajes(), Has.Count.EqualTo(1));
+                Assert.That(tarjeta.GetHistorialViajes()[0].GetLinea(), Is.EqualTo("142N"));
             });
         }
 
@@ -122,7 +121,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(viajeFallido, Is.False);
-                Assert.That(tarjeta.HistorialViajes, Has.Count.EqualTo(0));
+                Assert.That(tarjeta.GetHistorialViajes(), Has.Count.EqualTo(0));
             });
         }
 
@@ -132,14 +131,14 @@ namespace TarjetaTest
             var tarjeta = new Tarjeta(39000m);
             tarjeta.CargarSaldo(2000m);
 
-            Assert.That(tarjeta.Saldo, Is.EqualTo(40000m));
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(40000m));
         }
 
         [Test]
         public void Saldo_Inicial_Correcto()
         {
             var tarjeta = new Tarjeta(5000m);
-            Assert.That(tarjeta.Saldo, Is.EqualTo(5000m));
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(5000m));
         }
 
         [Test]
@@ -155,9 +154,9 @@ namespace TarjetaTest
                 Assert.That(educativo, Is.InstanceOf<Tarjeta>());
                 Assert.That(medio, Is.InstanceOf<Tarjeta>());
 
-                Assert.That(completa.Saldo, Is.EqualTo(1000m));
-                Assert.That(educativo.Saldo, Is.EqualTo(1000m));
-                Assert.That(medio.Saldo, Is.EqualTo(1000m));
+                Assert.That(completa.GetSaldo(), Is.EqualTo(1000m));
+                Assert.That(educativo.GetSaldo(), Is.EqualTo(1000m));
+                Assert.That(medio.GetSaldo(), Is.EqualTo(1000m));
             });
         }
 
@@ -169,8 +168,8 @@ namespace TarjetaTest
 
             Assert.Multiple(() =>
             {
-                Assert.That(boleto.Linea, Is.EqualTo("142N"));
-                Assert.That(boleto.Franquicia, Is.EqualTo("Ninguna"));
+                Assert.That(boleto.GetLinea(), Is.EqualTo("142N"));
+                Assert.That(boleto.GetFranquicia(), Is.EqualTo("Ninguna"));
             });
         }
 
@@ -182,9 +181,9 @@ namespace TarjetaTest
 
             Assert.Multiple(() =>
             {
-                Assert.That(tarjeta.Franquicia, Is.EqualTo("Franquicia Completa"));
+                Assert.That(tarjeta.GetFranquicia(), Is.EqualTo("Franquicia Completa"));
                 Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(0m));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(0m));
             });
         }
 
@@ -196,9 +195,9 @@ namespace TarjetaTest
 
             Assert.Multiple(() =>
             {
-                Assert.That(tarjeta.Franquicia, Is.EqualTo("Boleto Educativo Gratuito"));
+                Assert.That(tarjeta.GetFranquicia(), Is.EqualTo("Boleto Educativo Gratuito"));
                 Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(0m));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(0m));
             });
         }
 
@@ -210,9 +209,9 @@ namespace TarjetaTest
 
             Assert.Multiple(() =>
             {
-                Assert.That(tarjeta.Franquicia, Is.EqualTo("Medio Boleto Estudiantil"));
+                Assert.That(tarjeta.GetFranquicia(), Is.EqualTo("Medio Boleto Estudiantil"));
                 Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(790m));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(790m));
             });
         }
 
@@ -228,7 +227,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(viajeExitoso, Is.True);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(420m));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(420m));
             });
         }
 
@@ -243,7 +242,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(viajeExitoso, Is.True);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(0m));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(0m));
             });
         }
 
@@ -258,7 +257,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(viajeExitoso, Is.True);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(790m));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(790m));
             });
         }
     }

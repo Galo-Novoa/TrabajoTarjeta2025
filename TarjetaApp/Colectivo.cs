@@ -25,7 +25,7 @@ namespace TarjetaApp
 
         private static decimal CalcularPrecio(Tarjeta tarjeta)
         {
-            decimal descuento = tarjeta.Franquicia switch
+            decimal descuento = tarjeta.GetFranquicia() switch
             {
                 "Franquicia Completa" => 0m,
                 "Boleto Educativo Gratuito" => 0m,

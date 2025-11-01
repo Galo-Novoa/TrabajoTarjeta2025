@@ -6,24 +6,30 @@ namespace TarjetaApp
 {
     internal class Tarjeta
     {
-        public decimal Saldo { get; private set; }
-        public virtual string Franquicia { get; protected set; } = "Ninguna";
+        private decimal saldo;
+        protected string franquicia = "Ninguna";
         private static readonly decimal[] CargasAceptadas =
             { 2000m, 3000m, 4000m, 5000m, 8000m, 10000m, 15000m, 20000m, 25000m, 30000m };
 
-        public int Id { get; set; }
+        private readonly int id;
         private static int contadorId = 0;
 
         private const decimal LimiteSaldo = 40000m;
         private const decimal SaldoNegativoPermitido = -1200m;
 
-        public List<Boleto> HistorialViajes { get; private set; }
+        private readonly List<Boleto> historialViajes;
+
+        // Getters
+        public decimal GetSaldo() => saldo;
+        public string GetFranquicia() => franquicia;
+        public int GetId() => id;
+        public List<Boleto> GetHistorialViajes() => historialViajes;
 
         public Tarjeta(decimal SaldoInicial)
         {
-            this.Saldo = SaldoInicial;
-            this.HistorialViajes = new List<Boleto>();
-            this.Id = contadorId;
+            this.saldo = SaldoInicial;
+            this.historialViajes = new List<Boleto>();
+            this.id = contadorId;
             contadorId++;
         }
 
@@ -31,11 +37,11 @@ namespace TarjetaApp
         {
             if (CargasAceptadas.Contains(monto))
             {
-                Saldo += monto;
-                if (Saldo > LimiteSaldo)
-                    Saldo = LimiteSaldo;
+                saldo += monto;
+                if (saldo > LimiteSaldo)
+                    saldo = LimiteSaldo;
 
-                Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${Saldo}.");
+                Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${saldo}.");
             }
             else
             {
@@ -45,20 +51,20 @@ namespace TarjetaApp
 
         public bool CobrarPasaje(decimal monto)
         {
-            decimal nuevoSaldo = Saldo - monto;
+            decimal nuevoSaldo = saldo - monto;
 
             if (nuevoSaldo >= SaldoNegativoPermitido)
             {
-                Saldo = nuevoSaldo;
+                saldo = nuevoSaldo;
 
-                if (Saldo < 0)
-                    Console.WriteLine($"Saldo en negativo: ${Saldo} (viaje plus utilizado)");
+                if (saldo < 0)
+                    Console.WriteLine($"Saldo en negativo: ${saldo} (viaje plus utilizado)");
 
                 return true;
             }
             else
             {
-                Console.WriteLine($"No se puede realizar el viaje. Límite de Saldo negativo alcanzado (${Saldo}).");
+                Console.WriteLine($"No se puede realizar el viaje. Límite de Saldo negativo alcanzado (${saldo}).");
                 return false;
             }
         }
@@ -66,7 +72,13 @@ namespace TarjetaApp
         public void AgregarBoleto(Boleto boleto)
         {
             if (boleto != null)
-                HistorialViajes.Add(boleto);
+                historialViajes.Add(boleto);
+        }
+
+        // Setter protegido para Franquicia (para clases hijas)
+        protected void SetFranquicia(string nuevaFranquicia)
+        {
+            franquicia = nuevaFranquicia;
         }
     }
 }

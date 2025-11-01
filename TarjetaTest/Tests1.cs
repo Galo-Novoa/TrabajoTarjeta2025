@@ -27,11 +27,11 @@ namespace TarjetaTest
             {
                 Assert.That(boleto, Is.False);
                 tarjeta.CargarSaldo(monto);
-                Assert.That(tarjeta.Saldo, Is.EqualTo(monto));
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(monto));
                 Assert.That(colectivo.PagarCon(tarjeta), Is.True);
             });
 
-            Console.WriteLine($"Saldo luego de pagar el pasaje: ${tarjeta.Saldo}.");
+            Console.WriteLine($"Saldo luego de pagar el pasaje: ${tarjeta.GetSaldo()}.");
         }
 
         [TestCase(2000)]
@@ -48,7 +48,7 @@ namespace TarjetaTest
         {
             var tarjeta = new Tarjeta(39000m);
             tarjeta.CargarSaldo(monto);
-            Assert.That(tarjeta.Saldo, Is.EqualTo(40000m));
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(40000m));
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace TarjetaTest
         {
             var tarjeta = new Tarjeta(0m);
             tarjeta.CargarSaldo(5m);
-            Assert.That(tarjeta.Saldo, Is.EqualTo(0m));
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(0m));
         }
     }
 }
