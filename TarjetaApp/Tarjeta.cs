@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 namespace TarjetaApp
 {
     internal class Tarjeta
@@ -46,7 +45,7 @@ namespace TarjetaApp
                 {
                     saldoPendiente += this.saldo - SaldoMaximo;
                     this.saldo = SaldoMaximo;
-            }
+                }
                 Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${this.saldo}.");
             }
             else
@@ -78,16 +77,25 @@ namespace TarjetaApp
             }
         }
 
+        public void AcreditarCarga()
+        {
+            if (this.saldoPendiente > SaldoMaximo - this.saldo)
+            {
+                saldoPendiente -= SaldoMaximo - this.saldo;
+                this.saldo = SaldoMaximo;
+            }
+            else
+            {
+                this.saldo += saldoPendiente;
+                saldoPendiente = 0m;
+            }
+            Console.WriteLine($"Saldo pendiente acreditado. Queda por acreditar: {this.saldoPendiente}.");
+        }
+
         public void AgregarBoleto(Boleto boleto)
         {
             if (boleto != null)
-                historialViajes.Add(boleto);
-        }
-
-        // Setter protegido para Franquicia (para clases hijas)
-        protected void SetFranquicia(string nuevaFranquicia)
-        {
-            franquicia = nuevaFranquicia;
+                this.historialViajes.Add(boleto);
         }
     }
 }
