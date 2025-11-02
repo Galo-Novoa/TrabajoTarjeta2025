@@ -8,14 +8,16 @@ namespace TarjetaApp
     {
         private decimal saldo;
         protected string franquicia = "Ninguna";
+        private decimal saldoPendiente = 0m;
+
         private static readonly decimal[] CargasAceptadas =
             { 2000m, 3000m, 4000m, 5000m, 8000m, 10000m, 15000m, 20000m, 25000m, 30000m };
 
         private readonly int id;
         private static int contadorId = 0;
 
-        private const decimal LimiteSaldo = 40000m;
-        private const decimal SaldoNegativoPermitido = -1200m;
+        private const decimal SaldoMaximo = 56000m;
+        private const decimal SaldoMinimo = -1200m;
 
         private readonly List<Boleto> historialViajes;
 
@@ -24,6 +26,8 @@ namespace TarjetaApp
         public string GetFranquicia() => franquicia;
         public int GetId() => id;
         public List<Boleto> GetHistorialViajes() => historialViajes;
+
+        public decimal GetSaldoPendiente() => saldoPendiente;
 
         public Tarjeta(decimal SaldoInicial)
         {
@@ -38,10 +42,12 @@ namespace TarjetaApp
             if (CargasAceptadas.Contains(monto))
             {
                 saldo += monto;
-                if (saldo > LimiteSaldo)
-                    saldo = LimiteSaldo;
-
-                Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${saldo}.");
+                if (this.saldo > SaldoMaximo)
+                {
+                    saldoPendiente += this.saldo - SaldoMaximo;
+                    this.saldo = SaldoMaximo;
+            }
+                Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${this.saldo}.");
             }
             else
             {
@@ -51,14 +57,17 @@ namespace TarjetaApp
 
         public bool CobrarPasaje(decimal monto)
         {
-            decimal nuevoSaldo = saldo - monto;
+            decimal nuevoSaldo = this.saldo - monto;
 
-            if (nuevoSaldo >= SaldoNegativoPermitido)
+            if (nuevoSaldo >= SaldoMinimo)
             {
                 saldo = nuevoSaldo;
 
-                if (saldo < 0)
+                if (this.saldo < 0)
                     Console.WriteLine($"Saldo en negativo: ${saldo} (viaje plus utilizado)");
+
+                if(saldoPendiente > 0m)
+                    AcreditarCarga();
 
                 return true;
             }
