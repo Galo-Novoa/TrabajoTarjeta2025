@@ -54,9 +54,9 @@ namespace TarjetaApp
             }
         }
 
-        public bool CobrarPasaje(decimal monto)
+        public bool CobrarPasaje()
         {
-            decimal nuevoSaldo = this.saldo - monto;
+            decimal nuevoSaldo = this.saldo - this.CalcularPrecio();
 
             if (nuevoSaldo >= SaldoMinimo)
             {
@@ -76,7 +76,17 @@ namespace TarjetaApp
                 return false;
             }
         }
-
+        private decimal CalcularPrecio()
+        {
+            decimal descuento = this.GetFranquicia() switch
+            {
+                "Franquicia Completa" => 0m,
+                "Boleto Educativo Gratuito" => 0m,
+                "Medio Boleto Estudiantil" => 0.5m,
+                _ => 1m
+            };
+            return Colectivo.PrecioPasajeBase * descuento;
+        }
         public void AcreditarCarga()
         {
             if (this.saldoPendiente > SaldoMaximo - this.saldo)

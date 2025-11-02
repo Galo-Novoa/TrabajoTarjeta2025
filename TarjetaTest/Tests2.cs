@@ -59,8 +59,8 @@ namespace TarjetaTest
             var colectivo = new Colectivo("142N");
 
             // Intentar pagar sin saldo y sin viaje plus disponible
-            tarjeta.CobrarPasaje(1580m);
-            tarjeta.CobrarPasaje(1580m);
+            tarjeta.CobrarPasaje();
+            tarjeta.CobrarPasaje();
 
             var viajeFallido = colectivo.PagarCon(tarjeta);
 

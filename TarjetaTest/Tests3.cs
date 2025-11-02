@@ -26,7 +26,7 @@ namespace TarjetaTest
 
             Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(2000m));
 
-            tarjeta.CobrarPasaje(1580m);
+            tarjeta.CobrarPasaje();
 
             Assert.Multiple(() =>
             {
@@ -56,7 +56,7 @@ namespace TarjetaTest
             var tarjeta = new Tarjeta(Tarjeta.SaldoMaximo - 1000m);
             tarjeta.CargarSaldo(2000m);
 
-            tarjeta.CobrarPasaje(500m);
+            tarjeta.CobrarPasaje();
 
             Assert.Multiple(() =>
             {
@@ -72,7 +72,7 @@ namespace TarjetaTest
             tarjeta.CargarSaldo(2000m);
             tarjeta.CargarSaldo(5000m);
 
-            tarjeta.CobrarPasaje(5000m);
+            tarjeta.CobrarPasaje();
 
             Assert.Multiple(() =>
             {
@@ -98,7 +98,7 @@ namespace TarjetaTest
         public void Viaje_Sin_Saldo_Pendiente_No_Afecta_Acreditacion()
         {
             var tarjeta = new Tarjeta(5000m);
-            var viajeExitoso = tarjeta.CobrarPasaje(1580m);
+            var viajeExitoso = tarjeta.CobrarPasaje();
 
             Assert.Multiple(() =>
             {
@@ -114,9 +114,9 @@ namespace TarjetaTest
             var tarjeta = new Tarjeta(Tarjeta.SaldoMaximo);
             tarjeta.CargarSaldo(2000m);
 
-            tarjeta.CobrarPasaje(1580m);
-            tarjeta.CobrarPasaje(1580m);
-            var viajeFallido = tarjeta.CobrarPasaje(1580m);
+            tarjeta.CobrarPasaje();
+            tarjeta.CobrarPasaje();
+            var viajeFallido = tarjeta.CobrarPasaje();
 
             Assert.Multiple(() =>
             {
