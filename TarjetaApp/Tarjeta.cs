@@ -6,7 +6,8 @@ namespace TarjetaApp
     internal class Tarjeta
     {
         private decimal saldo;
-        protected string franquicia = "Ninguna";
+        protected virtual string Franquicia { get; set; } = "Ninguna";
+        protected virtual decimal Descuento { get; set; } = 1m;
         private decimal saldoPendiente = 0m;
 
         private static readonly decimal[] CargasAceptadas =
@@ -22,7 +23,7 @@ namespace TarjetaApp
 
         // Getters
         public decimal GetSaldo() => saldo;
-        public string GetFranquicia() => franquicia;
+        public string GetFranquicia() => Franquicia;
         public int GetId() => id;
         public List<Boleto> GetHistorialViajes() => historialViajes;
 
@@ -56,7 +57,7 @@ namespace TarjetaApp
 
         public bool CobrarPasaje()
         {
-            decimal nuevoSaldo = this.saldo - this.CalcularPrecio();
+            decimal nuevoSaldo = this.saldo - (Colectivo.PrecioPasajeBase * this.Descuento);
 
             if (nuevoSaldo >= SaldoMinimo)
             {
@@ -75,17 +76,6 @@ namespace TarjetaApp
                 Console.WriteLine($"No se puede realizar el viaje. Límite de Saldo negativo alcanzado (${saldo}).");
                 return false;
             }
-        }
-        private decimal CalcularPrecio()
-        {
-            decimal descuento = this.GetFranquicia() switch
-            {
-                "Franquicia Completa" => 0m,
-                "Boleto Educativo Gratuito" => 0m,
-                "Medio Boleto Estudiantil" => 0.5m,
-                _ => 1m
-            };
-            return Colectivo.PrecioPasajeBase * descuento;
         }
         public void AcreditarCarga()
         {

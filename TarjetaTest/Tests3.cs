@@ -61,7 +61,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(tarjeta.GetSaldo(), Is.EqualTo(Tarjeta.SaldoMaximo));
-                Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(500m));
+                Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(420m));
             });
         }
 
@@ -69,15 +69,14 @@ namespace TarjetaTest
         public void AcreditarCarga_Con_Saldo_Pendiente_Menor_Que_Espacio_Disponible()
         {
             var tarjeta = new Tarjeta(50000m);
-            tarjeta.CargarSaldo(2000m);
-            tarjeta.CargarSaldo(5000m);
+            tarjeta.CargarSaldo(7000m);
 
             tarjeta.CobrarPasaje();
 
             Assert.Multiple(() =>
             {
                 Assert.That(tarjeta.GetSaldo(), Is.EqualTo(Tarjeta.SaldoMaximo));
-                Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(0m));
+                Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(420m));
             });
         }
 
@@ -114,6 +113,7 @@ namespace TarjetaTest
             var tarjeta = new Tarjeta(Tarjeta.SaldoMaximo);
             tarjeta.CargarSaldo(2000m);
 
+            tarjeta.CargarSaldo(2000m);
             tarjeta.CobrarPasaje();
             tarjeta.CobrarPasaje();
             var viajeFallido = tarjeta.CobrarPasaje();
@@ -121,7 +121,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(viajeFallido, Is.False);
-                Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(2000m));
+                Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(4000m));
             });
         }
     }

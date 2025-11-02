@@ -2,23 +2,24 @@ namespace TarjetaApp
 {
     internal class BoletoEducativo : Tarjeta
     {
-        public BoletoEducativo(decimal SaldoInicial) : base(SaldoInicial)
-        {
-            this.franquicia = "Boleto Educativo Gratuito";
-        }
+        protected override string Franquicia => "Boleto Educativo Gratuito";
+        protected override decimal Descuento => 0m;
+
+        public BoletoEducativo(decimal saldoInicial) : base(saldoInicial) { }
     }
+
     internal class FranquiciaCompleta : Tarjeta
     {
-        public FranquiciaCompleta(decimal SaldoInicial) : base(SaldoInicial)
-        {
-            this.franquicia = "Franquicia Completa";
-        }
+        protected override string Franquicia => "Franquicia Completa";
+        protected override decimal Descuento => 0m;
+        public FranquiciaCompleta(decimal saldoInicial) : base(saldoInicial) { }
+
     }
+
     internal class MedioBoleto : Tarjeta
     {
-        public MedioBoleto(decimal SaldoInicial) : base(SaldoInicial)
-        {
-            this.franquicia = "Medio Boleto Estudiantil";
-        }
+        protected override string Franquicia => "Medio Boleto Estudiantil";
+        protected override decimal Descuento => 0.5m;
+        public MedioBoleto(decimal saldoInicial) : base(saldoInicial) { }
     }
 }
