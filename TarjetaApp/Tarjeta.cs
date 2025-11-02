@@ -15,8 +15,8 @@ namespace TarjetaApp
         private readonly int id;
         private static int contadorId = 0;
 
-        private const decimal SaldoMaximo = 56000m;
-        private const decimal SaldoMinimo = -1200m;
+        public const decimal SaldoMaximo = 56000m;
+        public const decimal SaldoMinimo = -1200m;
 
         private readonly List<Boleto> historialViajes;
 
