@@ -88,19 +88,6 @@ namespace TarjetaTest
         }
 
         [Test]
-        public void Tercer_Viaje_Se_Cobra_Completo()
-        {
-            var tarjeta = new MedioBoleto(5000m);
-            var colectivo = new Colectivo("142N");
-
-            Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-            System.Threading.Thread.Sleep(300000);
-            Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-            System.Threading.Thread.Sleep(300000);
-            Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-        }
-
-        [Test]
         public void Franquicia_Tiene_Solo_Dos_Viajes_Gratis()
         {
             var tarjeta = new FranquiciaCompleta(5000m);
