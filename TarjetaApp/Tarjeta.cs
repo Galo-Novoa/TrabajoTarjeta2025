@@ -58,8 +58,27 @@ namespace TarjetaApp
             }
         }
 
-        public virtual bool CobrarPasaje()
+        public bool CobrarPasaje()
         {
+            if (this is MedioBoleto)
+            {
+                DateTime ahora = DateTime.Now;
+                if (ultimoViaje.HasValue && (ahora - ultimoViaje.Value).TotalMinutes < 5)
+                {
+                    Console.WriteLine("Debe esperar 5 minutos para volver a viajar.");
+                    return false;
+                }
+
+                DateOnly hoy = DateOnly.FromDateTime(ahora);
+                if (!viajesPorDia.ContainsKey(hoy))
+                    viajesPorDia[hoy] = 0;
+
+                if (viajesPorDia[hoy] >= 2)
+                    this.Descuento = 1m;
+                else
+                    this.Descuento = 0.5m;
+            }
+
             decimal nuevoSaldo = this.saldo - (Colectivo.PrecioPasajeBase * this.Descuento);
 
             if (nuevoSaldo >= SaldoMinimo)
@@ -69,8 +88,17 @@ namespace TarjetaApp
                 if (this.saldo < 0)
                     Console.WriteLine($"Saldo en negativo: ${saldo} (viaje plus utilizado)");
 
-                if (saldoPendiente > 0m)
+                if(saldoPendiente > 0m)
                     AcreditarCarga();
+
+                if (this is MedioBoleto)
+                {
+                    ultimoViaje = DateTime.Now;
+                    DateOnly hoy = DateOnly.FromDateTime(ultimoViaje.Value);
+                    if (!viajesPorDia.ContainsKey(hoy))
+                        viajesPorDia[hoy] = 0;
+                    viajesPorDia[hoy]++;
+                }
 
                 return true;
             }
