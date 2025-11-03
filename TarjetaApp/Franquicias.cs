@@ -23,10 +23,36 @@ namespace TarjetaApp
     internal class MedioBoleto : Tarjeta
     {
         protected override string Franquicia => "Medio Boleto Estudiantil";
-        protected override decimal Descuento => 0.5m; // Siempre 50% de descuento
-        protected override int ViajesGratisPorDia => 0; // No tiene viajes gratis
-        protected override int MinutosEntreViajes => 5; // 5 minutos entre viajes
+        protected override decimal Descuento => 0.5m;
+        protected override int ViajesGratisPorDia => 0;
+        protected override int MinutosEntreViajes => 5;
 
         public MedioBoleto(decimal saldoInicial) : base(saldoInicial) { }
+
+        public override bool CobrarPasaje()
+        {
+            DateTime hoy = DateTime.Today;
+
+            // Verificar tiempo mínimo entre viajes
+            if ((DateTime.Now - ultimoViaje).TotalMinutes < MinutosEntreViajes)
+            {
+                Console.WriteLine($"Debe esperar al menos {MinutosEntreViajes} minutos entre viajes con medio boleto.");
+                return false;
+            }
+
+            // Verificar límite de viajes con descuento
+            if (!viajesPorDia.ContainsKey(hoy))
+                viajesPorDia[hoy] = 0;
+
+            // Si ya hizo 2 viajes hoy, aplicar tarifa completa
+            if (viajesPorDia[hoy] >= 2)
+            {
+                // Usar el método base para cobro normal
+                return base.CobrarPasaje();
+            }
+
+            // Para los primeros 2 viajes, usar la lógica con descuento
+            return base.CobrarPasaje();
+        }
     }
 }

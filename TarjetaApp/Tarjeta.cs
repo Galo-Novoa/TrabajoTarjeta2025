@@ -20,9 +20,6 @@ namespace TarjetaApp
         private static readonly decimal[] CargasAceptadas =
             { 2000m, 3000m, 4000m, 5000m, 8000m, 10000m, 15000m, 20000m, 25000m, 30000m };
 
-        private DateTime? ultimoViaje = null;
-        private Dictionary<DateOnly, int> viajesPorDia = new();
-
         private readonly int id;
         private static int contadorId = 0;
 
@@ -37,6 +34,8 @@ namespace TarjetaApp
         public int GetId() => id;
         public List<Boleto> GetHistorialViajes() => historialViajes;
         public decimal GetSaldoPendiente() => saldoPendiente;
+
+        // Resto de métodos
 
         public Tarjeta(decimal SaldoInicial)
         {
@@ -92,28 +91,6 @@ namespace TarjetaApp
 
             // Cobro normal
             decimal nuevoSaldo = this.saldo - montoACobrar;
-        public bool CobrarPasaje()
-        {
-            if (this is MedioBoleto)
-            {
-                DateTime ahora = DateTime.Now;
-                if (ultimoViaje.HasValue && (ahora - ultimoViaje.Value).TotalMinutes < 5)
-                {
-                    Console.WriteLine("Debe esperar 5 minutos para volver a viajar.");
-                    return false;
-                }
-
-                DateOnly hoy = DateOnly.FromDateTime(ahora);
-                if (!viajesPorDia.ContainsKey(hoy))
-                    viajesPorDia[hoy] = 0;
-
-                if (viajesPorDia[hoy] >= 2)
-                    this.Descuento = 1m;
-                else
-                    this.Descuento = 0.5m;
-            }
-
-            decimal nuevoSaldo = this.saldo - (Colectivo.PrecioPasajeBase * this.Descuento);
 
             if (nuevoSaldo >= SaldoMinimo)
             {
@@ -126,15 +103,6 @@ namespace TarjetaApp
 
                 if (saldoPendiente > 0m)
                     AcreditarCarga();
-
-                if (this is MedioBoleto)
-                {
-                    ultimoViaje = DateTime.Now;
-                    DateOnly hoy = DateOnly.FromDateTime(ultimoViaje.Value);
-                    if (!viajesPorDia.ContainsKey(hoy))
-                        viajesPorDia[hoy] = 0;
-                    viajesPorDia[hoy]++;
-                }
 
                 if (ViajesGratisPorDia > 0 && viajesPorDia[hoy] == ViajesGratisPorDia)
                 {
