@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace TarjetaApp
 {
     internal class Tarjeta
@@ -8,7 +9,13 @@ namespace TarjetaApp
         private decimal saldo;
         protected virtual string Franquicia { get; set; } = "Ninguna";
         protected virtual decimal Descuento { get; set; } = 1m;
-        private decimal saldoPendiente = 0m;
+        protected decimal saldoPendiente = 0m;
+
+        // Variables para control de viajes diarios
+        protected Dictionary<DateTime, int> viajesPorDia = new();
+        protected DateTime ultimoViaje = DateTime.MinValue;
+        protected virtual int ViajesGratisPorDia => 0;
+        protected virtual int MinutosEntreViajes => 0;
 
         private static readonly decimal[] CargasAceptadas =
             { 2000m, 3000m, 4000m, 5000m, 8000m, 10000m, 15000m, 20000m, 25000m, 30000m };
@@ -26,7 +33,6 @@ namespace TarjetaApp
         public string GetFranquicia() => Franquicia;
         public int GetId() => id;
         public List<Boleto> GetHistorialViajes() => historialViajes;
-
         public decimal GetSaldoPendiente() => saldoPendiente;
 
         public Tarjeta(decimal SaldoInicial)
@@ -55,19 +61,51 @@ namespace TarjetaApp
             }
         }
 
-        public bool CobrarPasaje()
+        public virtual bool CobrarPasaje()
         {
-            decimal nuevoSaldo = this.saldo - (Colectivo.PrecioPasajeBase * this.Descuento);
+            DateTime hoy = DateTime.Today;
+
+            // Verificar tiempo mínimo entre viajes (solo para algunas franquicias)
+            if (MinutosEntreViajes > 0 && (DateTime.Now - ultimoViaje).TotalMinutes < MinutosEntreViajes)
+            {
+                Console.WriteLine($"Debe esperar al menos {MinutosEntreViajes} minutos entre viajes.");
+                return false;
+            }
+
+            // Verificar viajes gratis
+            if (!viajesPorDia.ContainsKey(hoy))
+                viajesPorDia[hoy] = 0;
+
+            decimal montoACobrar = Colectivo.PrecioPasajeBase * Descuento;
+
+            if (ViajesGratisPorDia > 0 && viajesPorDia[hoy] < ViajesGratisPorDia)
+            {
+                // Viaje gratis
+                viajesPorDia[hoy]++;
+                ultimoViaje = DateTime.Now;
+                Console.WriteLine($"Viaje gratuito aplicado. Viajes gratis hoy: {viajesPorDia[hoy]}/{ViajesGratisPorDia}");
+                return true;
+            }
+
+            // Cobro normal
+            decimal nuevoSaldo = this.saldo - montoACobrar;
 
             if (nuevoSaldo >= SaldoMinimo)
             {
                 saldo = nuevoSaldo;
+                viajesPorDia[hoy]++;
+                ultimoViaje = DateTime.Now;
 
                 if (this.saldo < 0)
                     Console.WriteLine($"Saldo en negativo: ${saldo} (viaje plus utilizado)");
 
-                if(saldoPendiente > 0m)
+                if (saldoPendiente > 0m)
                     AcreditarCarga();
+
+                if (ViajesGratisPorDia > 0 && viajesPorDia[hoy] == ViajesGratisPorDia)
+                {
+                    Console.WriteLine($"Límite diario de viajes gratis alcanzado. Se cobrará tarifa normal.");
+                }
 
                 return true;
             }
@@ -77,6 +115,7 @@ namespace TarjetaApp
                 return false;
             }
         }
+
         public void AcreditarCarga()
         {
             if (this.saldoPendiente > SaldoMaximo - this.saldo)

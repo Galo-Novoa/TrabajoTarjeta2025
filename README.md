@@ -78,7 +78,8 @@ Para evitar el uso de una tarjeta de tipo boleto educativo gratuito en más de u
 - Escribir un test que verifique que los viajes posteriores al segundo se cobran con el precio completo.
 <br><br>
 ### Saldo de la tarjeta.
-Una tarjeta SUBE no puede almacenar más de 56000 pesos. Por lo tanto cuando se realiza una carga que haga que se supere este límite, se deberá acreditar la carga en la tarjeta hasta alcanzar el monto máximo permitido y el monto restante se deberá dejar pendiente de acreditación. Luego ese saldo pendiente se acredita a medida que se usa la tarjeta.
+Una tarjeta SUBE no puede almacenar más de 
+pesos. Por lo tanto cuando se realiza una carga que haga que se supere este límite, se deberá acreditar la carga en la tarjeta hasta alcanzar el monto máximo permitido y el monto restante se deberá dejar pendiente de acreditación. Luego ese saldo pendiente se acredita a medida que se usa la tarjeta.
 - Crear el metodo AcreditarCarga.
 - Modificar la función para cargar la tarjeta añadiendo esta funcionalidad.
 - Escribir un test que valide que si a una tarjeta se le carga un monto que supere el máximo permitido, se acredite el saldo hasta alcanzar el máximo(56000) y que el excedente quede almacenado y pendiente de acreditación.
