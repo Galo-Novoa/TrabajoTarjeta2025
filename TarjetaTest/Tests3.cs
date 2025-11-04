@@ -28,7 +28,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(2000m));
-                tarjeta.CobrarPasaje();
+                tarjeta.CobrarPasaje(Colectivo.PrecioPasajeBase);
                 Assert.That(tarjeta.GetSaldo(), Is.EqualTo(Tarjeta.SaldoMaximo));
                 Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(420m));
             });
@@ -66,7 +66,7 @@ namespace TarjetaTest
         public void Viaje_Sin_Saldo_Pendiente_No_Afecta_Acreditacion()
         {
             var tarjeta = new Tarjeta(5000m);
-            var viajeExitoso = tarjeta.CobrarPasaje();
+            var viajeExitoso = tarjeta.CobrarPasaje(Colectivo.PrecioPasajeBase);
 
             Assert.Multiple(() =>
             {
@@ -211,7 +211,7 @@ namespace TarjetaTest
 
             // Realizar una operación que active AcreditarCarga
             // Como hay mucho espacio, debería entrar en la rama ELSE
-            tarjeta.CobrarPasaje();
+            tarjeta.CobrarPasaje(Colectivo.PrecioPasajeBase);
 
             // Después de la acreditación, el pendiente debería ser 0
             // y el saldo debería haber aumentado

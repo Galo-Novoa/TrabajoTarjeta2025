@@ -59,8 +59,8 @@ namespace TarjetaTest
             var colectivo = new Colectivo("142N");
 
             // Intentar pagar sin saldo y sin viaje plus disponible
-            tarjeta.CobrarPasaje();
-            tarjeta.CobrarPasaje();
+            tarjeta.CobrarPasaje(Colectivo.PrecioPasajeBase);
+            tarjeta.CobrarPasaje(Colectivo.PrecioPasajeBase);
 
             var viajeFallido = colectivo.PagarCon(tarjeta);
 
@@ -240,7 +240,7 @@ namespace TarjetaTest
 
 			// Esto prueba que la propiedad virtual base funciona
 			// Aunque no se accede directamente, se prueba a través del comportamiento
-			var viajeExitoso = tarjeta.CobrarPasaje();
+			var viajeExitoso = tarjeta.CobrarPasaje(Colectivo.PrecioPasajeBase);
 
 			Assert.That(viajeExitoso, Is.True);
 			Assert.That(tarjeta.GetSaldo(), Is.EqualTo(1000m - 1580m));
