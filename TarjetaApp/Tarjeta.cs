@@ -68,7 +68,7 @@ namespace TarjetaApp
             }
         }
 
-        public virtual bool CobrarPasaje()
+        public virtual bool CobrarPasaje(decimal precioPasaje)
         {
             DateTime hoy = tiempo.Today();
 
@@ -94,7 +94,7 @@ namespace TarjetaApp
                 Console.WriteLine("Límite de viajes con descuento alcanzado. Se cobrará tarifa completa.");
             }
 
-            decimal montoACobrar = Colectivo.PrecioPasajeBase * descuentoAplicar;
+            decimal montoACobrar = precioPasaje * descuentoAplicar; // ← Usar precio recibido
 
             // Viajes gratis para franquicias Completas (solo 2 por día)
             if (Franquicia == "Completa" && viajesPorDia[hoy] < ViajesGratisPorDia)
@@ -110,7 +110,7 @@ namespace TarjetaApp
                     Console.WriteLine($"Límite diario de viajes gratis alcanzado. Se cobrará tarifa normal.");
                 }
 
-                return true; // ← VIAJE EXITOSO Y GRATIS
+                return true;
             }
 
             // Cobro normal (para todos los casos que no son viajes gratis)

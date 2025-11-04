@@ -21,15 +21,20 @@ namespace TarjetaApp
         public decimal GetSaldo() => saldo;
         public decimal GetRestante() => restante;
 
-        public Boleto(string linea, Tarjeta tarjeta, Tiempo tiempo)
+        // Constructor PRINCIPAL que acepta precio personalizado
+        public Boleto(string linea, Tarjeta tarjeta, Tiempo tiempo, decimal precioPasaje)
         {
             this.linea = linea;
             this.franquicia = tarjeta.GetFranquicia();
-            this.monto = Colectivo.PrecioPasajeBase;
+            this.monto = precioPasaje; // ← Usar el precio específico
             this.id = tarjeta.GetId();
             this.restante = tarjeta.GetSaldo();
             this.saldo = restante + monto;
             this.fecha = tiempo.Now();
         }
+
+        // Constructor de compatibilidad (para código existente)
+        public Boleto(string linea, Tarjeta tarjeta, Tiempo tiempo)
+            : this(linea, tarjeta, tiempo, Colectivo.PrecioPasajeBase) { }
     }
 }
