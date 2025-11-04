@@ -191,5 +191,59 @@ namespace TarjetaTest
                 Assert.That(tarjeta.GetSaldo(), Is.EqualTo(790m));
             });
         }
-    }
+
+		[Test]
+		public void Boleto_Todas_Las_Propiedades_Deben_Retornar_Valores_Correctos()
+		{
+			var tiempo = new TiempoFalso();
+			var tarjeta = new Tarjeta(5000m, tiempo);
+			var boleto = new Boleto("142N", tarjeta, tiempo);
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(boleto.GetLinea(), Is.EqualTo("142N"));
+				Assert.That(boleto.GetFranquicia(), Is.EqualTo("Ninguna"));
+				Assert.That(boleto.GetFecha(), Is.EqualTo(tiempo.Now()));
+				Assert.That(boleto.GetMonto(), Is.EqualTo(1580m));
+				Assert.That(boleto.GetId(), Is.EqualTo(tarjeta.GetId()));
+				Assert.That(boleto.GetSaldo(), Is.EqualTo(5000m + 1580m));
+				Assert.That(boleto.GetRestante(), Is.EqualTo(5000m));
+			});
+		}
+
+		[Test]
+		public void MedioUniversitario_Herencia_Y_Propiedades_Correctas()
+		{
+			var tarjeta = new MedioUniversitario(3000m);
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(tarjeta, Is.InstanceOf<Tarjeta>());
+				Assert.That(tarjeta.GetFranquicia(), Is.EqualTo("Parcial"));
+				Assert.That(tarjeta.GetSaldo(), Is.EqualTo(3000m));
+			});
+		}
+
+		[Test]
+		public void MedioUniversitario_Constructor_Con_Tiempo_Funciona()
+		{
+			var tiempo = new TiempoFalso();
+			var tarjeta = new MedioUniversitario(3000m, tiempo);
+
+			Assert.That(tarjeta.GetSaldo(), Is.EqualTo(3000m));
+		}
+
+		[Test]
+		public void Tarjeta_Base_ViajesGratisPorDia_Es_Cero()
+		{
+			var tarjeta = new Tarjeta(1000m);
+
+			// Esto prueba que la propiedad virtual base funciona
+			// Aunque no se accede directamente, se prueba a través del comportamiento
+			var viajeExitoso = tarjeta.CobrarPasaje();
+
+			Assert.That(viajeExitoso, Is.True);
+			Assert.That(tarjeta.GetSaldo(), Is.EqualTo(1000m - 1580m));
+		}
+	}
 }

@@ -95,14 +95,21 @@ namespace TarjetaApp
             // Viajes gratis para franquicias Completas (solo 2 por día)
             if (Franquicia == "Completa" && viajesPorDia[hoy] < ViajesGratisPorDia)
             {
-                // Viaje gratis
+                // Viaje gratis - solo incrementar contador y registrar
                 viajesPorDia[hoy]++;
                 ultimoViaje = tiempo.Now();
                 Console.WriteLine($"Viaje gratuito aplicado. Viajes gratis hoy: {viajesPorDia[hoy]}/{ViajesGratisPorDia}");
-                return true;
+
+                // Mensaje cuando se alcanza el límite
+                if (viajesPorDia[hoy] == ViajesGratisPorDia)
+                {
+                    Console.WriteLine($"Límite diario de viajes gratis alcanzado. Se cobrará tarifa normal.");
+                }
+
+                return true; // ← VIAJE EXITOSO Y GRATIS
             }
 
-            // Cobro normal
+            // Cobro normal (para todos los casos que no son viajes gratis)
             decimal nuevoSaldo = this.saldo - montoACobrar;
 
             if (nuevoSaldo >= SaldoMinimo)
@@ -121,11 +128,6 @@ namespace TarjetaApp
                 if (Franquicia == "Parcial" && viajesPorDia[hoy] <= 2)
                 {
                     Console.WriteLine($"Descuento aplicado. Viajes con descuento hoy: {viajesPorDia[hoy]}/2");
-                }
-
-                if (Franquicia == "Completa" && viajesPorDia[hoy] == ViajesGratisPorDia)
-                {
-                    Console.WriteLine($"Límite diario de viajes gratis alcanzado. Se cobrará tarifa normal.");
                 }
 
                 return true;

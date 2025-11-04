@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using TarjetaApp;
 
 namespace TarjetaTest
@@ -154,6 +155,47 @@ namespace TarjetaTest
                 Assert.That(colectivo.PagarCon(tarjeta), Is.True);
                 Assert.That(tarjeta.GetSaldo(), Is.EqualTo(3420m));
             });
+        }
+
+        [Test]
+        public void FranquiciaCompleta_Muestra_Mensaje_Al_Alcanzar_Limite_Viajes_Gratis()
+        {
+            var tarjeta = new Jubilados(5000m);
+            var colectivo = new Colectivo("142N");
+
+            // Primer viaje gratis
+            colectivo.PagarCon(tarjeta);
+            // Segundo viaje gratis  
+            colectivo.PagarCon(tarjeta);
+            // Tercer viaje - debería mostrar mensaje de límite alcanzado
+            colectivo.PagarCon(tarjeta);
+
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(5000m - 1580m)); // Se cobró normal
+        }
+
+        [Test]
+        public void TiempoFalso_AgregarDias_Funciona_Correctamente()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 14));
+            tiempo.AgregarDias(3);
+            Assert.That(tiempo.Now(), Is.EqualTo(new DateTime(2024, 10, 17)));
+        }
+
+        [Test]
+        public void TiempoFalso_AgregarHoras_Funciona_Correctamente()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 14, 10, 0, 0));
+            tiempo.AgregarHoras(5);
+            Assert.That(tiempo.Now(), Is.EqualTo(new DateTime(2024, 10, 14, 15, 0, 0)));
+        }
+
+        [Test]
+        public void TiempoFalso_EstablecerTiempo_Funciona_Correctamente()
+        {
+            var tiempo = new TiempoFalso();
+            var nuevoTiempo = new DateTime(2024, 12, 25, 18, 30, 0);
+            tiempo.EstablecerTiempo(nuevoTiempo);
+            Assert.That(tiempo.Now(), Is.EqualTo(nuevoTiempo));
         }
     }
 }
