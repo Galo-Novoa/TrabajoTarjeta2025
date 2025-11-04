@@ -79,7 +79,7 @@ namespace TarjetaTest
         public void No_Puede_Viajar_Dos_Veces_En_Menos_De_5_Minutos()
         {
             var tiempo = new TiempoFalso();
-            var tarjeta = new MedioBoleto(5000m, tiempo);
+            var tarjeta = new MedioEstudiantil(5000m, tiempo);
             var colectivo = new Colectivo("142N", tiempo);
 
             Assert.Multiple(() =>
@@ -90,10 +90,10 @@ namespace TarjetaTest
         }
 
         [Test]
-        public void MedioBoleto_Solo_Dos_Viajes_Con_Descuento()
+        public void MedioEstudiantil_Solo_Dos_Viajes_Con_Descuento()
         {
             var tiempo = new TiempoFalso();
-            var tarjeta = new MedioBoleto(5000m, tiempo);
+            var tarjeta = new MedioEstudiantil(5000m, tiempo);
             var colectivo = new Colectivo("142N", tiempo);
 
             Assert.Multiple(() =>
@@ -121,7 +121,7 @@ namespace TarjetaTest
         [Test]
         public void Franquicia_Tiene_Solo_Dos_Viajes_Gratis()
         {
-            var tarjeta = new FranquiciaCompleta(5000m);
+            var tarjeta = new Jubilados(5000m);
             var colectivo = new Colectivo("142N");
 
             Assert.Multiple(() =>

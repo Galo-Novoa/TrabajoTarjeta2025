@@ -70,8 +70,8 @@ namespace TarjetaApp
         {
             DateTime hoy = tiempo.Today();
 
-            // Verificar tiempo mínimo entre viajes (solo para algunas franquicias)
-            if (MinutosEntreViajes > 0 && (tiempo.Now() - ultimoViaje).TotalMinutes < MinutosEntreViajes)
+            // Verificar tiempo mínimo entre viajes (solo para franquicias Parciales)
+            if (Franquicia == "Parcial" && MinutosEntreViajes > 0 && (tiempo.Now() - ultimoViaje).TotalMinutes < MinutosEntreViajes)
             {
                 Console.WriteLine($"Debe esperar al menos {MinutosEntreViajes} minutos entre viajes.");
                 return false;
@@ -83,16 +83,17 @@ namespace TarjetaApp
 
             decimal descuentoAplicar = Descuento;
 
-            // LÓGICA PARA MEDIO BOLETO: solo 2 viajes con 50% de descuento
-            if (this is MedioBoleto && viajesPorDia[hoy] >= 2)
+            // LÓGICA PARA FRANQUICIAS PARCIALES: solo 2 viajes con 50% de descuento
+            if (Franquicia == "Parcial" && viajesPorDia[hoy] >= 2)
             {
                 descuentoAplicar = 1m; // Precio completo después de 2 viajes
-                Console.WriteLine("Límite de viajes con medio boleto alcanzado. Se cobrará tarifa completa.");
+                Console.WriteLine("Límite de viajes con descuento alcanzado. Se cobrará tarifa completa.");
             }
 
             decimal montoACobrar = Colectivo.PrecioPasajeBase * descuentoAplicar;
 
-            if (ViajesGratisPorDia > 0 && viajesPorDia[hoy] < ViajesGratisPorDia)
+            // Viajes gratis para franquicias Completas (solo 2 por día)
+            if (Franquicia == "Completa" && viajesPorDia[hoy] < ViajesGratisPorDia)
             {
                 // Viaje gratis
                 viajesPorDia[hoy]++;
@@ -116,13 +117,13 @@ namespace TarjetaApp
                 if (saldoPendiente > 0m)
                     AcreditarCarga();
 
-                // Mensaje específico para MedioBoleto
-                if (this is MedioBoleto && viajesPorDia[hoy] <= 2)
+                // Mensaje específico para franquicias Parciales
+                if (Franquicia == "Parcial" && viajesPorDia[hoy] <= 2)
                 {
-                    Console.WriteLine($"Medio boleto aplicado. Viajes con descuento hoy: {viajesPorDia[hoy]}/2");
+                    Console.WriteLine($"Descuento aplicado. Viajes con descuento hoy: {viajesPorDia[hoy]}/2");
                 }
 
-                if (ViajesGratisPorDia > 0 && viajesPorDia[hoy] == ViajesGratisPorDia)
+                if (Franquicia == "Completa" && viajesPorDia[hoy] == ViajesGratisPorDia)
                 {
                     Console.WriteLine($"Límite diario de viajes gratis alcanzado. Se cobrará tarifa normal.");
                 }

@@ -74,9 +74,9 @@ namespace TarjetaTest
         [Test]
         public void Franquicias_Herencia_Correcta()
         {
-            var completa = new FranquiciaCompleta(1000m);
+            var completa = new Jubilados(1000m);
             var educativo = new BoletoEducativo(1000m);
-            var medio = new MedioBoleto(1000m);
+            var medio = new MedioEstudiantil(1000m);
 
             Assert.Multiple(() =>
             {
@@ -105,9 +105,9 @@ namespace TarjetaTest
         }
 
         [Test]
-        public void FranquiciaCompleta_Pasaje_Gratuito()
+        public void Jubilados_Pasaje_Gratuito()
         {
-            var tarjeta = new FranquiciaCompleta(0m);
+            var tarjeta = new Jubilados(0m);
             var colectivo = new Colectivo("142N");
 
             Assert.Multiple(() =>
@@ -133,9 +133,9 @@ namespace TarjetaTest
         }
 
         [Test]
-        public void MedioBoleto_Medio_Pasaje()
+        public void MedioEstudiantil_Medio_Pasaje()
         {
-            var tarjeta = new MedioBoleto(1580m);
+            var tarjeta = new MedioEstudiantil(1580m);
             var colectivo = new Colectivo("142N");
 
             Assert.Multiple(() =>
@@ -163,9 +163,9 @@ namespace TarjetaTest
         }
 
         [Test]
-        public void CalcularPrecio_Con_FranquiciaCompleta_Es_Cero()
+        public void CalcularPrecio_Con_Jubilados_Es_Cero()
         {
-            var tarjeta = new FranquiciaCompleta(0m);
+            var tarjeta = new Jubilados(0m);
             var colectivo = new Colectivo("142N");
 
             var viajeExitoso = colectivo.PagarCon(tarjeta);
@@ -178,9 +178,9 @@ namespace TarjetaTest
         }
 
         [Test]
-        public void CalcularPrecio_Con_MedioBoleto_Es_Mitad()
+        public void CalcularPrecio_Con_MedioEstudiantil_Es_Mitad()
         {
-            var tarjeta = new MedioBoleto(1580m);
+            var tarjeta = new MedioEstudiantil(1580m);
             var colectivo = new Colectivo("142N");
 
             var viajeExitoso = colectivo.PagarCon(tarjeta);
