@@ -197,5 +197,26 @@ namespace TarjetaTest
             tiempo.EstablecerTiempo(nuevoTiempo);
             Assert.That(tiempo.Now(), Is.EqualTo(nuevoTiempo));
         }
+
+        [Test]
+        public void AcreditarCarga_Rama_Else_Se_Ejecuta_Cuando_Pendiente_Cabe_Completo()
+        {
+            // Crear una situación donde el pendiente cabe completamente
+            var tarjeta = new Tarjeta(40000m); // Saldo lejos del máximo
+            tarjeta.CargarSaldo(20000m); // Esto debería crear pendiente
+
+            // Verificar que hay pendiente
+            decimal pendienteInicial = tarjeta.GetSaldoPendiente();
+            Assert.That(pendienteInicial, Is.GreaterThan(0m));
+
+            // Realizar una operación que active AcreditarCarga
+            // Como hay mucho espacio, debería entrar en la rama ELSE
+            tarjeta.CobrarPasaje();
+
+            // Después de la acreditación, el pendiente debería ser 0
+            // y el saldo debería haber aumentado
+            Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(4000m - Colectivo.PrecioPasajeBase));
+            Assert.That(tarjeta.GetSaldo(), Is.GreaterThan(40000m));
+        }
     }
 }
