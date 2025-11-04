@@ -11,6 +11,8 @@ namespace TarjetaApp
         protected virtual decimal Descuento { get; set; } = 1m;
         protected decimal saldoPendiente = 0m;
 
+        private int numeroViaje = 1;
+
         // Variables para control de viajes diarios
         protected Dictionary<DateTime, int> viajesPorDia = new();
         protected DateTime ultimoViaje = DateTime.MinValue;
@@ -69,6 +71,8 @@ namespace TarjetaApp
         public virtual bool CobrarPasaje()
         {
             DateTime hoy = tiempo.Today();
+
+            this.Descuento = CalcularDescuento(numeroViaje);
 
             // Verificar tiempo mínimo entre viajes (solo para franquicias Parciales)
             if (Franquicia == "Parcial" && MinutosEntreViajes > 0 && (tiempo.Now() - ultimoViaje).TotalMinutes < MinutosEntreViajes)
@@ -129,7 +133,6 @@ namespace TarjetaApp
                 {
                     Console.WriteLine($"Descuento aplicado. Viajes con descuento hoy: {viajesPorDia[hoy]}/2");
                 }
-
                 return true;
             }
             else
@@ -154,7 +157,16 @@ namespace TarjetaApp
             Console.WriteLine($"Saldo pendiente acreditado. Queda por acreditar: {this.saldoPendiente}.");
         }
 
-        public void AgregarBoleto(Boleto boleto)
+        public static decimal CalcularDescuento(int numeroViajes)
+        {
+            return numeroViajes switch
+            {
+                > 29 and < 60 => 0.6m,    // 60% de descuento para 30-59 viajes
+                _ => 1m                   // Tarifa completa por defecto
+            };
+        }
+
+public void AgregarBoleto(Boleto boleto)
         {
             if (boleto != null)
                 this.historialViajes.Add(boleto);
