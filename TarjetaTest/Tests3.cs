@@ -27,9 +27,7 @@ namespace TarjetaTest
             Assert.Multiple(() =>
             {
                 Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(2000m));
-
                 tarjeta.CobrarPasaje();
-
                 Assert.That(tarjeta.GetSaldo(), Is.EqualTo(Tarjeta.SaldoMaximo));
                 Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(420m));
             });
@@ -80,11 +78,44 @@ namespace TarjetaTest
         [Test]
         public void No_Puede_Viajar_Dos_Veces_En_Menos_De_5_Minutos()
         {
-            var tarjeta = new MedioBoleto(5000m);
-            var colectivo = new Colectivo("142N");
+            var tiempo = new TiempoFalso();
+            var tarjeta = new MedioBoleto(5000m, tiempo);
+            var colectivo = new Colectivo("142N", tiempo);
 
-            Assert.That(colectivo.PagarCon(tarjeta), Is.True);
-            Assert.That(colectivo.PagarCon(tarjeta), Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(colectivo.PagarCon(tarjeta), Is.True);
+                Assert.That(colectivo.PagarCon(tarjeta), Is.False);
+            });
+        }
+
+        [Test]
+        public void MedioBoleto_Solo_Dos_Viajes_Con_Descuento()
+        {
+            var tiempo = new TiempoFalso();
+            var tarjeta = new MedioBoleto(5000m, tiempo);
+            var colectivo = new Colectivo("142N", tiempo);
+
+            Assert.Multiple(() =>
+            {
+                // Primer viaje con descuento
+                Assert.That(colectivo.PagarCon(tarjeta), Is.True);
+
+                // Avanzar 6 minutos
+                tiempo.AgregarMinutos(6);
+
+                // Segundo viaje con descuento
+                Assert.That(colectivo.PagarCon(tarjeta), Is.True);
+
+                // Avanzar 6 minutos más
+                tiempo.AgregarMinutos(6);
+
+                // Tercer viaje - debería cobrarse completo
+                Assert.That(colectivo.PagarCon(tarjeta), Is.True);
+
+                // Verificar que se cobró completo (790 * 2 + 1580 = 3160)
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(5000m - 3160m));
+            });
         }
 
         [Test]

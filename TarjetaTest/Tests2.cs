@@ -93,8 +93,9 @@ namespace TarjetaTest
         [Test]
         public void Boleto_Creacion_Correcta()
         {
+            var tiempo = new TiempoFalso();
             var tarjeta = new Tarjeta(0m);
-            var boleto = new Boleto("142N", tarjeta);
+            var boleto = new Boleto("142N", tarjeta, tiempo);
 
             Assert.Multiple(() =>
             {

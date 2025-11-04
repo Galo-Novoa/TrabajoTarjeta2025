@@ -27,6 +27,7 @@ namespace TarjetaApp
         public const decimal SaldoMinimo = -1200m;
 
         private readonly List<Boleto> historialViajes;
+        protected Tiempo tiempo;
 
         // Getters
         public decimal GetSaldo() => saldo;
@@ -35,13 +36,15 @@ namespace TarjetaApp
         public List<Boleto> GetHistorialViajes() => historialViajes;
         public decimal GetSaldoPendiente() => saldoPendiente;
 
-        // Resto de métodos
+        // Constructores
+        public Tarjeta(decimal SaldoInicial) : this(SaldoInicial, new Tiempo()) { }
 
-        public Tarjeta(decimal SaldoInicial)
+        public Tarjeta(decimal SaldoInicial, Tiempo tiempo)
         {
             this.saldo = SaldoInicial;
             this.historialViajes = new List<Boleto>();
             this.id = contadorId;
+            this.tiempo = tiempo;
             contadorId++;
         }
 
@@ -65,10 +68,10 @@ namespace TarjetaApp
 
         public virtual bool CobrarPasaje()
         {
-            DateTime hoy = DateTime.Today;
+            DateTime hoy = tiempo.Today();
 
             // Verificar tiempo mínimo entre viajes (solo para algunas franquicias)
-            if (MinutosEntreViajes > 0 && (DateTime.Now - ultimoViaje).TotalMinutes < MinutosEntreViajes)
+            if (MinutosEntreViajes > 0 && (tiempo.Now() - ultimoViaje).TotalMinutes < MinutosEntreViajes)
             {
                 Console.WriteLine($"Debe esperar al menos {MinutosEntreViajes} minutos entre viajes.");
                 return false;
@@ -78,13 +81,22 @@ namespace TarjetaApp
             if (!viajesPorDia.ContainsKey(hoy))
                 viajesPorDia[hoy] = 0;
 
-            decimal montoACobrar = Colectivo.PrecioPasajeBase * Descuento;
+            decimal descuentoAplicar = Descuento;
+
+            // LÓGICA PARA MEDIO BOLETO: solo 2 viajes con 50% de descuento
+            if (this is MedioBoleto && viajesPorDia[hoy] >= 2)
+            {
+                descuentoAplicar = 1m; // Precio completo después de 2 viajes
+                Console.WriteLine("Límite de viajes con medio boleto alcanzado. Se cobrará tarifa completa.");
+            }
+
+            decimal montoACobrar = Colectivo.PrecioPasajeBase * descuentoAplicar;
 
             if (ViajesGratisPorDia > 0 && viajesPorDia[hoy] < ViajesGratisPorDia)
             {
                 // Viaje gratis
                 viajesPorDia[hoy]++;
-                ultimoViaje = DateTime.Now;
+                ultimoViaje = tiempo.Now();
                 Console.WriteLine($"Viaje gratuito aplicado. Viajes gratis hoy: {viajesPorDia[hoy]}/{ViajesGratisPorDia}");
                 return true;
             }
@@ -96,13 +108,19 @@ namespace TarjetaApp
             {
                 saldo = nuevoSaldo;
                 viajesPorDia[hoy]++;
-                ultimoViaje = DateTime.Now;
+                ultimoViaje = tiempo.Now();
 
                 if (this.saldo < 0)
                     Console.WriteLine($"Saldo en negativo: ${saldo} (viaje plus utilizado)");
 
                 if (saldoPendiente > 0m)
                     AcreditarCarga();
+
+                // Mensaje específico para MedioBoleto
+                if (this is MedioBoleto && viajesPorDia[hoy] <= 2)
+                {
+                    Console.WriteLine($"Medio boleto aplicado. Viajes con descuento hoy: {viajesPorDia[hoy]}/2");
+                }
 
                 if (ViajesGratisPorDia > 0 && viajesPorDia[hoy] == ViajesGratisPorDia)
                 {

@@ -6,14 +6,21 @@ namespace TarjetaApp
     {
         public static decimal PrecioPasajeBase => 1580m;
         public string linea;
+        private readonly Tiempo tiempo;
 
-        public Colectivo(string linea) { this.linea = linea; }
+        public Colectivo(string linea) : this(linea, new Tiempo()) { }
+
+        public Colectivo(string linea, Tiempo tiempo)
+        {
+            this.linea = linea;
+            this.tiempo = tiempo;
+        }
 
         public bool PagarCon(Tarjeta tarjeta)
         {
             if (tarjeta.CobrarPasaje())
             {
-                var boleto = new Boleto(this.linea, tarjeta);
+                var boleto = new Boleto(this.linea, tarjeta, tiempo);
                 tarjeta.AgregarBoleto(boleto);
                 return true;
             }

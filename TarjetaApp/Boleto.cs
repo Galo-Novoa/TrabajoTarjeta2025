@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TarjetaApp
 {
@@ -25,7 +21,7 @@ namespace TarjetaApp
         public decimal GetSaldo() => saldo;
         public decimal GetRestante() => restante;
 
-        public Boleto(string linea, Tarjeta tarjeta)
+        public Boleto(string linea, Tarjeta tarjeta, Tiempo tiempo)
         {
             this.linea = linea;
             this.franquicia = tarjeta.GetFranquicia();
@@ -33,9 +29,7 @@ namespace TarjetaApp
             this.id = tarjeta.GetId();
             this.restante = tarjeta.GetSaldo();
             this.saldo = restante + monto;
-
-            //Falta implementación real de tiempo para Fecha.
-            this.fecha = DateTime.Now;
+            this.fecha = tiempo.Now();
         }
     }
 }

@@ -17,48 +17,48 @@ namespace TarjetaApp
         }
     }
 
-    public class TiempoFalso : Tiempo
+    internal class TiempoFalso : Tiempo
     {
-        private DateTime _tiempoActual;
+        private DateTime tiempoActual;
 
         public TiempoFalso()
         {
-            _tiempoActual = new DateTime(2024, 10, 14, 10, 0, 0);
+            tiempoActual = new DateTime(2024, 10, 14, 10, 0, 0);
         }
 
         public TiempoFalso(DateTime fechaInicial)
         {
-            _tiempoActual = fechaInicial;
+            tiempoActual = fechaInicial;
         }
 
         public override DateTime Now()
         {
-            return _tiempoActual;
+            return tiempoActual;
         }
 
         public override DateTime Today()
         {
-            return _tiempoActual.Date;
+            return tiempoActual.Date;
         }
 
         public void AgregarDias(int cantidad)
         {
-            _tiempoActual = _tiempoActual.AddDays(cantidad);
+            tiempoActual = tiempoActual.AddDays(cantidad);
         }
 
         public void AgregarMinutos(int cantidad)
         {
-            _tiempoActual = _tiempoActual.AddMinutes(cantidad);
+            tiempoActual = tiempoActual.AddMinutes(cantidad);
         }
 
         public void AgregarHoras(int cantidad)
         {
-            _tiempoActual = _tiempoActual.AddHours(cantidad);
+            tiempoActual = tiempoActual.AddHours(cantidad);
         }
 
         public void EstablecerTiempo(DateTime nuevoTiempo)
         {
-            _tiempoActual = nuevoTiempo;
+            tiempoActual = nuevoTiempo;
         }
     }
 }
