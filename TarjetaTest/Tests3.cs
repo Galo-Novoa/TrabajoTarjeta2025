@@ -1,3 +1,4 @@
+using NuGet.Frameworks;
 using NUnit.Framework;
 using System;
 using TarjetaApp;
@@ -215,8 +216,11 @@ namespace TarjetaTest
 
             // Después de la acreditación, el pendiente debería ser 0
             // y el saldo debería haber aumentado
-            Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(4000m - Colectivo.PrecioPasajeBase));
-            Assert.That(tarjeta.GetSaldo(), Is.GreaterThan(40000m));
+            Assert.Multiple(() =>
+            {
+                Assert.That(tarjeta.GetSaldoPendiente(), Is.EqualTo(4000m - Colectivo.PrecioPasajeBase));
+                Assert.That(tarjeta.GetSaldo(), Is.GreaterThan(40000m));
+            });
         }
     }
 }

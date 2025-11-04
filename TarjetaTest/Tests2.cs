@@ -242,8 +242,11 @@ namespace TarjetaTest
 			// Aunque no se accede directamente, se prueba a través del comportamiento
 			var viajeExitoso = tarjeta.CobrarPasaje(Colectivo.PrecioPasajeBase);
 
-			Assert.That(viajeExitoso, Is.True);
-			Assert.That(tarjeta.GetSaldo(), Is.EqualTo(1000m - 1580m));
+            Assert.Multiple(() =>
+            {
+                Assert.That(viajeExitoso, Is.True);
+                Assert.That(tarjeta.GetSaldo(), Is.EqualTo(1000m - 1580m));
+            });
 		}
 	}
 }
