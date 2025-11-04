@@ -7,7 +7,7 @@ namespace TarjetaApp
     {
         protected override string Franquicia => "Completa";
         protected override decimal Descuento => 1m;
-        protected virtual int ViajesGratisPorDia => 2;
+        protected override int ViajesGratisPorDia => 2;
 
         public BoletoEducativo(decimal saldoInicial) : base(saldoInicial) { }
     }
@@ -16,7 +16,7 @@ namespace TarjetaApp
     {
         protected override string Franquicia => "Completa";
         protected override decimal Descuento => 1m;
-        protected virtual int ViajesGratisPorDia => 2;
+        protected override int ViajesGratisPorDia => 2;
 
         public Jubilados(decimal saldoInicial) : base(saldoInicial) { }
     }
@@ -25,8 +25,9 @@ namespace TarjetaApp
     {
         protected override string Franquicia => "Parcial";
         protected override decimal Descuento => 0.5m;
-        protected virtual int MinutosEntreViajes => 5;
+        protected override int MinutosEntreViajes => 5;
         public MedioEstudiantil(decimal saldoInicial) : base(saldoInicial) { }
+        public MedioEstudiantil(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
     }
 
 
@@ -34,9 +35,10 @@ namespace TarjetaApp
     {
         protected override string Franquicia => "Parcial";
         protected override decimal Descuento => 0.5m;
-        protected virtual int MinutosEntreViajes => 5;
+        protected override int MinutosEntreViajes => 5;
 
         public MedioUniversitario(decimal saldoInicial) : base(saldoInicial) { }
+        public MedioUniversitario(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
     }
 
 }
