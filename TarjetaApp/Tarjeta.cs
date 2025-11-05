@@ -12,6 +12,7 @@ namespace TarjetaApp
         protected decimal saldoPendiente = 0m;
 
         private int numeroViaje = 1;
+        private DateTime mesActual;
 
         // Variables para control de viajes diarios
         protected Dictionary<DateTime, int> viajesPorDia = new();
@@ -37,6 +38,7 @@ namespace TarjetaApp
         public int GetId() => id;
         public List<Boleto> GetHistorialViajes() => historialViajes;
         public decimal GetSaldoPendiente() => saldoPendiente;
+        public int GetNumeroViaje() => numeroViaje;
 
         // Constructores
         public Tarjeta(decimal SaldoInicial) : this(SaldoInicial, new Tiempo()) { }
@@ -47,6 +49,7 @@ namespace TarjetaApp
             this.historialViajes = new List<Boleto>();
             this.id = contadorId;
             this.tiempo = tiempo;
+            this.mesActual = new DateTime(tiempo.Now().Year, tiempo.Now().Month, 1); // Primer día del mes
             contadorId++;
         }
 
@@ -72,7 +75,8 @@ namespace TarjetaApp
         {
             DateTime hoy = tiempo.Today();
 
-            this.Descuento = CalcularDescuento(numeroViaje);
+            // Verificar reinicio mensual
+            VerificarReinicioMensual();
 
             // Verificar tiempo mínimo entre viajes (solo para franquicias Parciales)
             if (Franquicia == "Parcial" && MinutosEntreViajes > 0 && (tiempo.Now() - ultimoViaje).TotalMinutes < MinutosEntreViajes)
@@ -85,35 +89,30 @@ namespace TarjetaApp
             if (!viajesPorDia.ContainsKey(hoy))
                 viajesPorDia[hoy] = 0;
 
-            decimal descuentoAplicar = Descuento;
+            // Calcular descuentos
+            decimal descuentoFranquicia = CalcularDescuentoFranquicia(viajesPorDia[hoy]);
+            decimal descuentoUsoFrecuente = CalcularDescuentoUsoFrecuente();
 
-            // LÓGICA PARA FRANQUICIAS PARCIALES: solo 2 viajes con 50% de descuento
-            if (Franquicia == "Parcial" && viajesPorDia[hoy] >= 2)
-            {
-                descuentoAplicar = 1m; // Precio completo después de 2 viajes
-                Console.WriteLine("Límite de viajes con descuento alcanzado. Se cobrará tarifa completa.");
-            }
+            // Aplicar descuentos (el menor descuento aplica)
+            decimal descuentoAplicar = Math.Min(descuentoFranquicia, descuentoUsoFrecuente);
 
-            decimal montoACobrar = precioPasaje * descuentoAplicar; // ← Usar precio recibido
+            decimal montoACobrar = precioPasaje * descuentoAplicar;
 
-            // Viajes gratis para franquicias Completas (solo 2 por día)
+            // Viajes gratis para franquicias Completas
             if (Franquicia == "Completa" && viajesPorDia[hoy] < ViajesGratisPorDia)
             {
-                // Viaje gratis - solo incrementar contador y registrar
                 viajesPorDia[hoy]++;
                 ultimoViaje = tiempo.Now();
                 Console.WriteLine($"Viaje gratuito aplicado. Viajes gratis hoy: {viajesPorDia[hoy]}/{ViajesGratisPorDia}");
 
-                // Mensaje cuando se alcanza el límite
                 if (viajesPorDia[hoy] == ViajesGratisPorDia)
                 {
-                    Console.WriteLine($"Límite diario de viajes gratis alcanzado. Se cobrará tarifa normal.");
+                    Console.WriteLine($"Límite diario de viajes gratis alcanzado.");
                 }
-
                 return true;
             }
 
-            // Cobro normal (para todos los casos que no son viajes gratis)
+            // Cobro normal
             decimal nuevoSaldo = this.saldo - montoACobrar;
 
             if (nuevoSaldo >= SaldoMinimo)
@@ -122,17 +121,21 @@ namespace TarjetaApp
                 viajesPorDia[hoy]++;
                 ultimoViaje = tiempo.Now();
 
+                // Mostrar información de descuentos aplicados
+                MostrarInfoDescuentos(descuentoFranquicia, descuentoUsoFrecuente, montoACobrar);
+
+                // INCREMENTAR CONTADOR DE VIAJES MENSUALES SOLO SI ES TARJETA NORMAL
+                if (Franquicia == "Ninguna")
+                {
+                    numeroViaje++;
+                }
+
                 if (this.saldo < 0)
                     Console.WriteLine($"Saldo en negativo: ${saldo} (viaje plus utilizado)");
 
                 if (saldoPendiente > 0m)
                     AcreditarCarga();
 
-                // Mensaje específico para franquicias Parciales
-                if (Franquicia == "Parcial" && viajesPorDia[hoy] <= 2)
-                {
-                    Console.WriteLine($"Descuento aplicado. Viajes con descuento hoy: {viajesPorDia[hoy]}/2");
-                }
                 return true;
             }
             else
@@ -157,16 +160,65 @@ namespace TarjetaApp
             Console.WriteLine($"Saldo pendiente acreditado. Queda por acreditar: {this.saldoPendiente}.");
         }
 
-        public static decimal CalcularDescuento(int numeroViajes)
+        private void VerificarReinicioMensual()
         {
-            return numeroViajes switch
+            DateTime hoy = tiempo.Today();
+            DateTime primerDiaMesActual = new DateTime(hoy.Year, hoy.Month, 1);
+
+            if (mesActual < primerDiaMesActual)
             {
-                > 29 and < 60 => 0.6m,    // 60% de descuento para 30-59 viajes
-                _ => 1m                   // Tarifa completa por defecto
+                Console.WriteLine($"¡Nuevo mes! Reiniciando contador de viajes frecuentes. Viajes del mes anterior: {numeroViaje - 1}");
+                numeroViaje = 1;
+                mesActual = primerDiaMesActual;
+            }
+        }
+
+        private decimal CalcularDescuentoFranquicia(int viajesHoy)
+        {
+            if (Franquicia == "Parcial" && viajesHoy < 2)
+            {
+                return 0.5m; // 50% descuento primeros 2 viajes
+            }
+            return 1m; // Tarifa completa
+        }
+
+        public decimal CalcularDescuentoUsoFrecuente(int numeroViajeTest = 0)
+        {
+            int viaje = numeroViajeTest > 0 ? numeroViajeTest : numeroViaje;
+
+            if (Franquicia != "Ninguna")
+                return 1m;
+
+            return viaje switch
+            {
+                >= 30 and <= 59 => 0.8m,  // 20% descuento
+                >= 60 and <= 80 => 0.75m, // 25% descuento
+                _ => 1m                   // Tarifa normal
             };
         }
 
-public void AgregarBoleto(Boleto boleto)
+        private void MostrarInfoDescuentos(decimal descuentoFranquicia, decimal descuentoUsoFrecuente, decimal montoACobrar)
+        {
+            // Mostrar información de descuento de uso frecuente
+            if (Franquicia == "Ninguna" && descuentoUsoFrecuente < 1m)
+            {
+                string rango = numeroViaje switch
+                {
+                    >= 30 and <= 59 => "20%",
+                    >= 60 and <= 80 => "25%",
+                    _ => "0%"
+                };
+                Console.WriteLine($"Boleto uso frecuente: Viaje #{numeroViaje} - {rango} descuento");
+            }
+
+            // Mostrar información de descuento de franquicia
+            if (descuentoFranquicia < 1m)
+            {
+                Console.WriteLine($"Descuento de franquicia aplicado: ${montoACobrar}");
+            }
+        }
+
+        public void AgregarBoleto(Boleto boleto)
         {
             if (boleto != null)
                 this.historialViajes.Add(boleto);
