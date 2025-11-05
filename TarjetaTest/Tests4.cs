@@ -387,5 +387,206 @@ namespace TarjetaTest
                     Assert.That(tarjeta.GetSaldo(), Is.EqualTo(saldoInicial));
                 });
             }
+
+        [Test]
+        public void Trasbordo_Dentro_de_60_Minutos_Es_Gratuito()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 10, 0, 0)); // Miércoles 10:00
+            var tarjeta = new Tarjeta(5000m, tiempo);
+            var colectivo1 = new Colectivo("142N", tiempo);
+            var colectivo2 = new Colectivo("135A", tiempo);
+
+            // Primer viaje
+            Assert.That(colectivo1.PagarCon(tarjeta), Is.True);
+            decimal saldoDespuesPrimerViaje = tarjeta.GetSaldo();
+
+            // Avanzar 30 minutos
+            tiempo.AgregarMinutos(30);
+
+            // Segundo viaje (trasbordo) - debería ser gratuito
+            Assert.That(colectivo2.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(saldoDespuesPrimerViaje)); // Saldo no cambia
+
+            // Verificar que se creó un boleto de trasbordo
+            var boletosTrasbordo = tarjeta.GetHistorialViajes().Where(b => b.EsTrasbordo()).ToList();
+            Assert.That(boletosTrasbordo, Has.Count.EqualTo(1));
+            Assert.That(boletosTrasbordo[0].GetMonto(), Is.EqualTo(0m));
+        }
+
+        [Test]
+        public void Trasbordo_Despues_de_60_Minutos_No_Es_Gratuito()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 10, 0, 0));
+            var tarjeta = new Tarjeta(5000m, tiempo);
+            var colectivo1 = new Colectivo("142N", tiempo);
+            var colectivo2 = new Colectivo("135A", tiempo);
+
+            // Primer viaje
+            colectivo1.PagarCon(tarjeta);
+            decimal saldoDespuesPrimerViaje = tarjeta.GetSaldo();
+
+            // Avanzar 61 minutos (más del límite)
+            tiempo.AgregarMinutos(61);
+
+            // Segundo viaje - NO debería ser trasbordo
+            Assert.That(colectivo2.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.LessThan(saldoDespuesPrimerViaje)); // Saldo debería disminuir
+        }
+
+        [Test]
+        public void Trasbordo_Misma_Linea_No_Es_Gratuito()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 10, 0, 0));
+            var tarjeta = new Tarjeta(5000m, tiempo);
+            var colectivo = new Colectivo("142N", tiempo);
+
+            // Primer viaje
+            colectivo.PagarCon(tarjeta);
+            decimal saldoDespuesPrimerViaje = tarjeta.GetSaldo();
+
+            // Avanzar 30 minutos
+            tiempo.AgregarMinutos(30);
+
+            // Misma línea - NO debería ser trasbordo
+            Assert.That(colectivo.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.LessThan(saldoDespuesPrimerViaje)); // Saldo debería disminuir
+        }
+
+        [Test]
+        public void Trasbordo_Domingo_No_Disponible()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 20, 10, 0, 0)); // Domingo 10:00
+            var tarjeta = new Tarjeta(5000m, tiempo);
+            var colectivo1 = new Colectivo("142N", tiempo);
+            var colectivo2 = new Colectivo("135A", tiempo);
+
+            // Primer viaje
+            colectivo1.PagarCon(tarjeta);
+            decimal saldoDespuesPrimerViaje = tarjeta.GetSaldo();
+
+            // Avanzar 30 minutos
+            tiempo.AgregarMinutos(30);
+
+            // Segundo viaje - NO debería ser trasbordo (domingo)
+            Assert.That(colectivo2.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.LessThan(saldoDespuesPrimerViaje)); // Saldo debería disminuir
+        }
+
+        [Test]
+        public void Trasbordo_Fuera_Horario_Nocturno_No_Disponible()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 6, 30, 0)); // Miércoles 6:30 (antes de las 7:00)
+            var tarjeta = new Tarjeta(5000m, tiempo);
+            var colectivo1 = new Colectivo("142N", tiempo);
+            var colectivo2 = new Colectivo("135A", tiempo);
+
+            // Primer viaje
+            colectivo1.PagarCon(tarjeta);
+            decimal saldoDespuesPrimerViaje = tarjeta.GetSaldo();
+
+            // Avanzar 25 minutos (sigue siendo antes de las 7:00)
+            tiempo.AgregarMinutos(25);
+
+            // Segundo viaje - NO debería ser trasbordo (fuera de horario)
+            Assert.That(colectivo2.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.LessThan(saldoDespuesPrimerViaje)); // Saldo debería disminuir
+        }
+
+        [Test]
+        public void Multiples_Trasbordos_Dentro_de_60_Minutos()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 10, 0, 0));
+            var tarjeta = new Tarjeta(5000m, tiempo);
+            var colectivo1 = new Colectivo("142N", tiempo);
+            var colectivo2 = new Colectivo("135A", tiempo);
+            var colectivo3 = new Colectivo("168C", tiempo);
+
+            // Primer viaje
+            Assert.That(colectivo1.PagarCon(tarjeta), Is.True);
+            decimal saldoDespuesPrimerViaje = tarjeta.GetSaldo();
+
+            // Avanzar 20 minutos - Primer trasbordo
+            tiempo.AgregarMinutos(20);
+            Assert.That(colectivo2.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(saldoDespuesPrimerViaje));
+
+            // Avanzar 20 minutos más - Segundo trasbordo (dentro de los 60 minutos desde el primer viaje)
+            tiempo.AgregarMinutos(20);
+            Assert.That(colectivo3.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(saldoDespuesPrimerViaje));
+
+            // Verificar que hay 2 boletos de trasbordo
+            var boletosTrasbordo = tarjeta.GetHistorialViajes().Where(b => b.EsTrasbordo()).ToList();
+            Assert.That(boletosTrasbordo, Has.Count.EqualTo(2));
+        }
+
+        [Test]
+        public void Trasbordo_Con_Franquicias_Completas()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 10, 0, 0));
+            var tarjeta = new Jubilados(5000m, tiempo);
+            var colectivo1 = new Colectivo("142N", tiempo);
+            var colectivo2 = new Colectivo("135A", tiempo);
+
+            // Primer viaje (gratuito por franquicia)
+            Assert.That(colectivo1.PagarCon(tarjeta), Is.True);
+            decimal saldoInicial = tarjeta.GetSaldo(); // Debería seguir siendo 5000
+
+            // Avanzar 30 minutos
+            tiempo.AgregarMinutos(30);
+
+            // Segundo viaje - debería ser trasbordo gratuito
+            Assert.That(colectivo2.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(saldoInicial)); // Saldo no cambia
+        }
+
+        [Test]
+        public void Trasbordo_Con_Franquicias_Parciales()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 10, 0, 0));
+            var tarjeta = new MedioEstudiantil(5000m, tiempo);
+            var colectivo1 = new Colectivo("142N", tiempo);
+            var colectivo2 = new Colectivo("135A", tiempo);
+
+            // Primer viaje (con descuento del 50%)
+            Assert.That(colectivo1.PagarCon(tarjeta), Is.True);
+            decimal saldoDespuesPrimerViaje = tarjeta.GetSaldo();
+
+            // Avanzar 30 minutos
+            tiempo.AgregarMinutos(30);
+
+            // Segundo viaje - debería ser trasbordo gratuito
+            Assert.That(colectivo2.PagarCon(tarjeta), Is.True);
+            Assert.That(tarjeta.GetSaldo(), Is.EqualTo(saldoDespuesPrimerViaje)); // Saldo no cambia
+        }
+
+        [Test]
+        public void Boleto_Trasbordo_Muestra_Informacion_Correcta()
+        {
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 10, 0, 0));
+            var tarjeta = new Tarjeta(5000m, tiempo);
+            var colectivo1 = new Colectivo("142N", tiempo);
+            var colectivo2 = new Colectivo("135A", tiempo);
+
+            // Primer viaje
+            colectivo1.PagarCon(tarjeta);
+
+            // Avanzar 30 minutos
+            tiempo.AgregarMinutos(30);
+
+            // Trasbordo
+            colectivo2.PagarCon(tarjeta);
+
+            // Verificar boleto de trasbordo
+            var boletoTrasbordo = tarjeta.GetHistorialViajes().First(b => b.EsTrasbordo());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(boletoTrasbordo.GetLinea(), Is.EqualTo("135A"));
+                Assert.That(boletoTrasbordo.GetMonto(), Is.EqualTo(0m));
+                Assert.That(boletoTrasbordo.EsTrasbordo(), Is.True);
+                Assert.That(boletoTrasbordo.GetFecha(), Is.EqualTo(tiempo.Now()));
+            });
         }
     }
+}

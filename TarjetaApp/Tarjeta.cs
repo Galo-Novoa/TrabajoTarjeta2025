@@ -20,6 +20,11 @@ namespace TarjetaApp
         protected virtual int ViajesGratisPorDia => 0;
         protected virtual int MinutosEntreViajes => 0;
 
+        // Nuevas variables para control de trasbordos
+        private Boleto ultimoBoleto = null;
+        private DateTime horaPrimerViajeTrasbordo = DateTime.MinValue;
+        private int cantidadTrasbordos = 0;
+
         private static readonly decimal[] CargasAceptadas =
             { 2000m, 3000m, 4000m, 5000m, 8000m, 10000m, 15000m, 20000m, 25000m, 30000m };
 
@@ -39,8 +44,10 @@ namespace TarjetaApp
         public List<Boleto> GetHistorialViajes() => historialViajes;
         public decimal GetSaldoPendiente() => saldoPendiente;
         public int GetNumeroViaje() => numeroViaje;
+        public Boleto GetUltimoBoleto() => ultimoBoleto; // Nuevo getter
+        public int GetCantidadTrasbordos() => cantidadTrasbordos; // Nuevo getter
 
-        // Constructores
+        // Constructores (sin cambios)
         public Tarjeta(decimal SaldoInicial) : this(SaldoInicial, new Tiempo()) { }
 
         public Tarjeta(decimal SaldoInicial, Tiempo tiempo)
@@ -49,52 +56,102 @@ namespace TarjetaApp
             this.historialViajes = new List<Boleto>();
             this.id = contadorId;
             this.tiempo = tiempo;
-            this.mesActual = new DateTime(tiempo.Now().Year, tiempo.Now().Month, 1); // Primer día del mes
+            this.mesActual = new DateTime(tiempo.Now().Year, tiempo.Now().Month, 1);
             contadorId++;
         }
 
-        // Método para validar horario de franquicias
+        // Método para validar horario de franquicias (sin cambios)
         protected virtual bool ValidarHorarioFranquicia()
         {
-            // Si no es una franquicia (tarjeta normal), siempre permite el viaje
             if (Franquicia == "Ninguna")
                 return true;
 
             DateTime ahora = tiempo.Now();
 
-            // Validar día de la semana (Lunes a Viernes = 1-5)
             if (ahora.DayOfWeek == DayOfWeek.Saturday || ahora.DayOfWeek == DayOfWeek.Sunday)
                 return false;
 
-            // Validar horario (6:00 a 22:00)
             TimeSpan horaActual = ahora.TimeOfDay;
-            TimeSpan horaInicio = new TimeSpan(6, 0, 0);  // 6:00 AM
+            TimeSpan horaInicio = new TimeSpan(6, 0, 0);
+            TimeSpan horaFin = new TimeSpan(22, 0, 0);
+
+            return horaActual >= horaInicio && horaActual < horaFin;
+        }
+
+        // Nuevo método para validar horario de trasbordos
+        protected virtual bool ValidarHorarioTrasbordo()
+        {
+            DateTime ahora = tiempo.Now();
+
+            // Trasbordos válidos de lunes a sábado de 7:00 a 22:00
+            if (ahora.DayOfWeek == DayOfWeek.Sunday)
+                return false;
+
+            TimeSpan horaActual = ahora.TimeOfDay;
+            TimeSpan horaInicio = new TimeSpan(7, 0, 0);  // 7:00 AM
             TimeSpan horaFin = new TimeSpan(22, 0, 0);    // 10:00 PM
 
             return horaActual >= horaInicio && horaActual < horaFin;
         }
 
-        public void CargarSaldo(decimal monto)
+        // Nuevo método para verificar si es un trasbordo válido
+        private bool EsTrasbordoValido(string lineaColectivo)
         {
-            if (CargasAceptadas.Contains(monto))
+            // Si no hay último boleto, no es trasbordo
+            if (ultimoBoleto == null)
+                return false;
+
+            DateTime ahora = tiempo.Now();
+
+            // Verificar que no haya pasado más de 1 hora desde el primer viaje del trasbordo
+            if ((ahora - horaPrimerViajeTrasbordo).TotalMinutes > 60)
             {
-                saldo += monto;
-                if (this.saldo > SaldoMaximo)
-                {
-                    saldoPendiente += this.saldo - SaldoMaximo;
-                    this.saldo = SaldoMaximo;
-                }
-                Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${this.saldo}.");
+                ReiniciarContadorTrasbordo();
+                return false;
             }
-            else
-            {
-                Console.WriteLine($"Monto no aceptado. Valores válidos: {string.Join(", ", CargasAceptadas)}.");
-            }
+
+            // Verificar horario de trasbordos
+            if (!ValidarHorarioTrasbordo())
+                return false;
+
+            // Verificar que sea una línea diferente
+            if (ultimoBoleto.GetLinea() == lineaColectivo)
+                return false;
+
+            return true;
         }
 
-        public virtual bool CobrarPasaje(decimal precioPasaje)
+        // Nuevo método para reiniciar contador de trasbordos
+        private void ReiniciarContadorTrasbordo()
+        {
+            cantidadTrasbordos = 0;
+            horaPrimerViajeTrasbordo = DateTime.MinValue;
+        }
+
+        public virtual bool CobrarPasaje(decimal precioPasaje, string lineaColectivo = "")
         {
             DateTime hoy = tiempo.Today();
+
+            // Verificar si es un trasbordo válido
+            bool esTrasbordo = !string.IsNullOrEmpty(lineaColectivo) && EsTrasbordoValido(lineaColectivo);
+
+            if (esTrasbordo)
+            {
+                // Trasbordo gratuito
+                Console.WriteLine("Trasbordo aplicado - Viaje gratuito");
+
+                // Crear boleto de trasbordo con monto 0
+                var boletoTrasbordo = new Boleto(lineaColectivo, this, tiempo, 0m, true);
+                AgregarBoleto(boletoTrasbordo);
+
+                // Actualizar último boleto
+                ultimoBoleto = boletoTrasbordo;
+                cantidadTrasbordos++;
+
+                return true;
+            }
+
+            // Si no es trasbordo, continuar con la lógica normal de cobro...
 
             // Verificar horario para franquicias
             if (!ValidarHorarioFranquicia())
@@ -131,12 +188,14 @@ namespace TarjetaApp
             {
                 viajesPorDia[hoy]++;
                 ultimoViaje = tiempo.Now();
-                Console.WriteLine($"Viaje gratuito aplicado. Viajes gratis hoy: {viajesPorDia[hoy]}/{ViajesGratisPorDia}");
 
-                if (viajesPorDia[hoy] == ViajesGratisPorDia)
+                // Iniciar contador de trasbordo si es el primer viaje
+                if (cantidadTrasbordos == 0)
                 {
-                    Console.WriteLine($"Límite diario de viajes gratis alcanzado.");
+                    horaPrimerViajeTrasbordo = tiempo.Now();
                 }
+
+                Console.WriteLine($"Viaje gratuito aplicado. Viajes gratis hoy: {viajesPorDia[hoy]}/{ViajesGratisPorDia}");
                 return true;
             }
 
@@ -148,6 +207,12 @@ namespace TarjetaApp
                 saldo = nuevoSaldo;
                 viajesPorDia[hoy]++;
                 ultimoViaje = tiempo.Now();
+
+                // Iniciar contador de trasbordo si es el primer viaje
+                if (cantidadTrasbordos == 0)
+                {
+                    horaPrimerViajeTrasbordo = tiempo.Now();
+                }
 
                 // Mostrar información de descuentos aplicados
                 MostrarInfoDescuentos(descuentoFranquicia, descuentoUsoFrecuente, montoACobrar);
@@ -250,7 +315,32 @@ namespace TarjetaApp
         public void AgregarBoleto(Boleto boleto)
         {
             if (boleto != null)
+            {
                 this.historialViajes.Add(boleto);
+                // Actualizar último boleto para control de trasbordos
+                if (!boleto.EsTrasbordo())
+                {
+                    ultimoBoleto = boleto;
+                }
+            }
+        }
+
+        public void CargarSaldo(decimal monto)
+        {
+            if (CargasAceptadas.Contains(monto))
+            {
+                saldo += monto;
+                if (this.saldo > SaldoMaximo)
+                {
+                    saldoPendiente += this.saldo - SaldoMaximo;
+                    this.saldo = SaldoMaximo;
+                }
+                Console.WriteLine($"Se cargaron ${monto}. Saldo actual: ${this.saldo}.");
+            }
+            else
+            {
+                Console.WriteLine($"Monto no aceptado. Valores v├ílidos: {string.Join(", ", CargasAceptadas)}.");
+            }
         }
     }
 }

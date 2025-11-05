@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace TarjetaApp
 {
@@ -19,10 +20,16 @@ namespace TarjetaApp
 
         public bool PagarCon(Tarjeta tarjeta)
         {
-            if (tarjeta.CobrarPasaje(this.PrecioPasaje))
+            // Pasar la línea del colectivo para verificar trasbordos
+            if (tarjeta.CobrarPasaje(this.PrecioPasaje, this.linea))
             {
-                var boleto = new Boleto(this.linea, tarjeta, tiempo, this.PrecioPasaje);
-                tarjeta.AgregarBoleto(boleto);
+                // Solo crear boleto si no fue un trasbordo (los trasbordos ya crean su boleto)
+                if (!tarjeta.GetHistorialViajes().Any(b => b.EsTrasbordo() && b.GetLinea() == this.linea &&
+                    (tiempo.Now() - b.GetFecha()).TotalMinutes < 1))
+                {
+                    var boleto = new Boleto(this.linea, tarjeta, tiempo, this.PrecioPasaje);
+                    tarjeta.AgregarBoleto(boleto);
+                }
                 return true;
             }
             else
