@@ -53,6 +53,27 @@ namespace TarjetaApp
             contadorId++;
         }
 
+        // Método para validar horario de franquicias
+        protected virtual bool ValidarHorarioFranquicia()
+        {
+            // Si no es una franquicia (tarjeta normal), siempre permite el viaje
+            if (Franquicia == "Ninguna")
+                return true;
+
+            DateTime ahora = tiempo.Now();
+
+            // Validar día de la semana (Lunes a Viernes = 1-5)
+            if (ahora.DayOfWeek == DayOfWeek.Saturday || ahora.DayOfWeek == DayOfWeek.Sunday)
+                return false;
+
+            // Validar horario (6:00 a 22:00)
+            TimeSpan horaActual = ahora.TimeOfDay;
+            TimeSpan horaInicio = new TimeSpan(6, 0, 0);  // 6:00 AM
+            TimeSpan horaFin = new TimeSpan(22, 0, 0);    // 10:00 PM
+
+            return horaActual >= horaInicio && horaActual < horaFin;
+        }
+
         public void CargarSaldo(decimal monto)
         {
             if (CargasAceptadas.Contains(monto))
@@ -74,6 +95,13 @@ namespace TarjetaApp
         public virtual bool CobrarPasaje(decimal precioPasaje)
         {
             DateTime hoy = tiempo.Today();
+
+            // Verificar horario para franquicias
+            if (!ValidarHorarioFranquicia())
+            {
+                Console.WriteLine($"Franquicia '{Franquicia}' no disponible fuera del horario permitido (Lunes a Viernes 6:00-22:00).");
+                return false;
+            }
 
             // Verificar reinicio mensual
             VerificarReinicioMensual();
@@ -145,6 +173,7 @@ namespace TarjetaApp
             }
         }
 
+        // Resto de los métodos permanecen igual...
         public void AcreditarCarga()
         {
             if (this.saldoPendiente > SaldoMaximo - this.saldo)

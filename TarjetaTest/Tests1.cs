@@ -18,8 +18,9 @@ namespace TarjetaTest
         [TestCase(30000)]
         public void Pagar_Colectivo(decimal monto)
         {
-            var tarjeta = new Tarjeta(0m);
-            var colectivo = new Colectivo("142N");
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0)); // Miércoles 12:00
+            var tarjeta = new Tarjeta(0m, tiempo);
+            var colectivo = new Colectivo("142N", tiempo);
             var boleto = colectivo.PagarCon(tarjeta);
 
             Assert.Multiple(() =>
@@ -36,7 +37,8 @@ namespace TarjetaTest
         [Test]
         public void Monto_de_Carga_no_aceptado()
         {
-            var tarjeta = new Tarjeta(0m);
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0));
+            var tarjeta = new Tarjeta(0m, tiempo);
             tarjeta.CargarSaldo(5m);
             Assert.That(tarjeta.GetSaldo(), Is.EqualTo(0m));
         }
@@ -44,14 +46,16 @@ namespace TarjetaTest
         [Test]
         public void Saldo_Inicial_Correcto()
         {
-            var tarjeta = new Tarjeta(5000m);
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0));
+            var tarjeta = new Tarjeta(5000m, tiempo);
             Assert.That(tarjeta.GetSaldo(), Is.EqualTo(5000m));
         }
 
         [Test]
         public void LimiteSaldo_No_Supera_SaldoMaximo()
         {
-            var tarjeta = new Tarjeta(Tarjeta.SaldoMaximo - 1000m);
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0));
+            var tarjeta = new Tarjeta(Tarjeta.SaldoMaximo - 1000m, tiempo);
             tarjeta.CargarSaldo(2000m);
             Assert.That(tarjeta.GetSaldo(), Is.EqualTo(Tarjeta.SaldoMaximo));
         }

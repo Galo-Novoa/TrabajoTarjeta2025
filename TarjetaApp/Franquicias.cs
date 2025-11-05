@@ -10,6 +10,7 @@ namespace TarjetaApp
         protected override int ViajesGratisPorDia => 2;
 
         public BoletoEducativo(decimal saldoInicial) : base(saldoInicial) { }
+        public BoletoEducativo(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
     }
 
     internal class Jubilados : Tarjeta
@@ -19,6 +20,7 @@ namespace TarjetaApp
         protected override int ViajesGratisPorDia => 2;
 
         public Jubilados(decimal saldoInicial) : base(saldoInicial) { }
+        public Jubilados(decimal saldoInicial, Tiempo tiempo) : base(saldoInicial, tiempo) { }
     }
 
     internal class MedioEstudiantil : Tarjeta

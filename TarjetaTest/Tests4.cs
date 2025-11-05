@@ -23,7 +23,8 @@ namespace TarjetaTest
         [Test]
         public void Interurbano_Con_MedioEstudiantil_Cobra_Mitad()
         {
-            var tarjeta = new MedioEstudiantil(5000m);
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0));
+            var tarjeta = new MedioEstudiantil(5000m, tiempo);
             var interurbano = new Interurbano("I1");
 
             Assert.That(interurbano.PagarCon(tarjeta), Is.True);
@@ -33,7 +34,8 @@ namespace TarjetaTest
         [Test]
         public void Interurbano_Con_Jubilados_Primeros_Viajes_Gratis()
         {
-            var tarjeta = new Jubilados(5000m);
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0));
+            var tarjeta = new Jubilados(5000m, tiempo);
             var interurbano = new Interurbano("I1");
 
             // Primer viaje gratis
@@ -229,5 +231,161 @@ namespace TarjetaTest
 
             return costo;
         }
+            [Test]
+            public void ValidarHorarioFranquicia_Fuera_Horario_Nocturno_Retorna_False()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 5, 59, 0)); // Miércoles 5:59
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+
+                // Act & Assert
+                Assert.That(tarjeta.CobrarPasaje(1580m), Is.False);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Dentro_Horario_Retorna_True()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0)); // Miércoles 12:00
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+
+                // Act & Assert
+                Assert.That(tarjeta.CobrarPasaje(1580m), Is.True);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_FinDeSemana_Retorna_False()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 19, 12, 0, 0)); // Sábado 12:00
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+
+                // Act & Assert
+                Assert.That(tarjeta.CobrarPasaje(1580m), Is.False);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Limite_Inferior_Exacto_Retorna_True()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 6, 0, 0)); // Miércoles 6:00 exacto
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+
+                // Act & Assert
+                Assert.That(tarjeta.CobrarPasaje(1580m), Is.True);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Limite_Superior_Exacto_Retorna_False()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 22, 0, 0)); // Miércoles 22:00 exacto
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+
+                // Act & Assert
+                Assert.That(tarjeta.CobrarPasaje(1580m), Is.False);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Tarjeta_Normal_Siempre_Retorna_True()
+            {
+                // Arrange - Tarjeta normal sin franquicia
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 19, 23, 0, 0)); // Sábado 23:00
+                var tarjeta = new Tarjeta(5000m, tiempo);
+
+                // Act & Assert - Tarjeta normal puede viajar cualquier día y hora
+                Assert.That(tarjeta.CobrarPasaje(1580m), Is.True);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Todas_Franquicias_Respetan_Mismo_Horario()
+            {
+                // Arrange
+                var tiempoValido = new TiempoFalso(new DateTime(2024, 10, 16, 15, 0, 0)); // Miércoles 15:00
+                var tiempoInvalido = new TiempoFalso(new DateTime(2024, 10, 19, 15, 0, 0)); // Sábado 15:00
+
+                var franquiciasValido = new Tarjeta[]
+                {
+                new MedioEstudiantil(5000m, tiempoValido),
+                new MedioUniversitario(5000m, tiempoValido),
+                new Jubilados(5000m, tiempoValido),
+                new BoletoEducativo(5000m, tiempoValido)
+                };
+
+                var franquiciasInvalido = new Tarjeta[]
+                {
+                new MedioEstudiantil(5000m, tiempoInvalido),
+                new MedioUniversitario(5000m, tiempoInvalido),
+                new Jubilados(5000m, tiempoInvalido),
+                new BoletoEducativo(5000m, tiempoInvalido)
+                };
+
+                // Act & Assert - Todas deben funcionar en horario válido
+                foreach (var franquicia in franquiciasValido)
+                {
+                    Assert.That(franquicia.CobrarPasaje(1580m), Is.True,
+                        $"{franquicia.GetType().Name} debería funcionar en horario válido");
+                }
+
+                // Act & Assert - Ninguna debe funcionar en horario inválido
+                foreach (var franquicia in franquiciasInvalido)
+                {
+                    Assert.That(franquicia.CobrarPasaje(1580m), Is.False,
+                        $"{franquicia.GetType().Name} NO debería funcionar en fin de semana");
+                }
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Viernes_Noche_Tarde_Retorna_False()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 18, 22, 30, 0)); // Viernes 22:30
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+
+                // Act & Assert
+                Assert.That(tarjeta.CobrarPasaje(1580m), Is.False);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Lunes_Temprano_Retorna_False()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 14, 5, 30, 0)); // Lunes 5:30
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+
+                // Act & Assert
+                Assert.That(tarjeta.CobrarPasaje(1580m), Is.False);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Interurbano_Respetan_Horario()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 19, 10, 0, 0)); // Sábado 10:00
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+                var interurbano = new Interurbano("I1", tiempo);
+
+                // Act & Assert
+                Assert.That(interurbano.PagarCon(tarjeta), Is.False);
+            }
+
+            [Test]
+            public void ValidarHorarioFranquicia_Saldo_No_Cambia_Si_Horario_Invalido()
+            {
+                // Arrange
+                var tiempo = new TiempoFalso(new DateTime(2024, 10, 19, 14, 0, 0)); // Sábado 14:00
+                var tarjeta = new MedioEstudiantil(5000m, tiempo);
+                decimal saldoInicial = tarjeta.GetSaldo();
+
+                // Act
+                bool resultado = tarjeta.CobrarPasaje(1580m);
+
+                // Assert
+                Assert.Multiple(() =>
+                {
+                    Assert.That(resultado, Is.False);
+                    Assert.That(tarjeta.GetSaldo(), Is.EqualTo(saldoInicial));
+                });
+            }
+        }
     }
-}

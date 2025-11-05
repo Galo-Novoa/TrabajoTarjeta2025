@@ -123,8 +123,9 @@ namespace TarjetaTest
         [Test]
         public void Franquicia_Tiene_Solo_Dos_Viajes_Gratis()
         {
-            var tarjeta = new Jubilados(5000m);
-            var colectivo = new Colectivo("142N");
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0));
+            var tarjeta = new Jubilados(5000m, tiempo);
+            var colectivo = new Colectivo("142N", tiempo);
 
             Assert.Multiple(() =>
             {
@@ -142,7 +143,8 @@ namespace TarjetaTest
         [Test]
         public void BoletoEducativo_Tiene_Solo_Dos_Viajes_Gratis()
         {
-            var tarjeta = new BoletoEducativo(5000m);
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0));
+            var tarjeta = new BoletoEducativo(5000m, tiempo);
             var colectivo = new Colectivo("142N");
 
             Assert.Multiple(() =>
@@ -161,7 +163,8 @@ namespace TarjetaTest
         [Test]
         public void FranquiciaCompleta_Muestra_Mensaje_Al_Alcanzar_Limite_Viajes_Gratis()
         {
-            var tarjeta = new Jubilados(5000m);
+            var tiempo = new TiempoFalso(new DateTime(2024, 10, 16, 12, 0, 0));
+            var tarjeta = new Jubilados(5000m, tiempo);
             var colectivo = new Colectivo("142N");
 
             // Primer viaje gratis
